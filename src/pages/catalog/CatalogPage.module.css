@@ -1,0 +1,56 @@
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.filtersCard {
+  background-color: #ffffff;
+  border: 1px solid #e9ecef;
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.productCard {
+  background-color: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.15s ease;
+}
+
+.productCard:hover {
+  border-color: #cbd5e1;
+}
+
+.category {
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.productTitle {
+  font-weight: 500;
+  font-size: 14px;
+  color: #111827;
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+
+.price {
+  font-weight: 600;
+  font-size: 16px;
+  color: #111827;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 14px;
+  margin-top: auto;
+}

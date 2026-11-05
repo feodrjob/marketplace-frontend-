@@ -1,0 +1,95 @@
+.header {
+  height: 52px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e9ecef;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.inner {
+  height: 52px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+}
+
+.link {
+  display: block;
+  line-height: 1;
+  padding: 8px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #4b5563;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.link:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.linkActive {
+  background-color: #e0edfe;
+  color: #085fc6;
+}
+
+.linkActive:hover {
+  background-color: #e0edfe;
+  color: #085fc6;
+}
+
+.userGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.userLink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+  cursor: pointer;
+}
+
+.userLink:hover {
+  background-color: #f3f4f6;
+}
+
+.bonusText {
+  font-size: 12px;
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Мобильный вид: строго скрываем кнопки из шапки */
+@media (max-width: 767px) {
+  .links {
+    display: none !important;
+  }
+  .userGroup {
+    display: none !important;
+  }
+}
