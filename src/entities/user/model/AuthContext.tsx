@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, AuthContextType } from './types';
+import { User, AuthContextType, RegisterBuyerData } from './types';
 import { setAccessToken, silentRefresh, apiClient } from '@/shared/api';
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -53,10 +53,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const mockUser: User = {
         id: '1',
         email,
-        name: email.split('@')[0] || 'Пользователь',
+        name: email.split('@')[0] || 'Покупатель',
         roles: ['ROLE_BUYER'],
         buyerId: 'buyer-uuid-1',
         bonusBalance: 15000
+      };
+      setAccessToken(`mock_jwt_token_${Date.now()}`);
+      setUser(mockUser);
+      return { success: true, user: mockUser };
+    }
+  };
+
+  const registerBuyer = async (data: RegisterBuyerData): Promise<{ success: boolean; user?: User; error?: string }> => {
+    try {
+      const response = await apiClient.post<{ accessToken: string; user: User }>('/auth/register/buyer', data);
+      const { accessToken, user: registeredUser } = response.data;
+      setAccessToken(accessToken);
+      setUser(registeredUser);
+      return { success: true, user: registeredUser };
+    } catch (err: unknown) {
+      // Для демонстрации в оффлайне / мок-режиме:
+      const mockUser: User = {
+        id: `buyer-${Date.now()}`,
+        email: data.email,
+        name: data.fullName,
+        roles: ['ROLE_BUYER'],
+        buyerId: `buyer-uuid-${Date.now()}`,
+        phone: data.phone,
+        bonusBalance: 500 // Приветственные бонусы новому покупателю
       };
       setAccessToken(`mock_jwt_token_${Date.now()}`);
       setUser(mockUser);
@@ -87,6 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isSeller: roles.includes('ROLE_SELLER'),
         isAdmin: roles.includes('ROLE_ADMIN'),
         login,
+        registerBuyer,
         logout
       }}
     >

@@ -6,8 +6,15 @@ export interface User {
   name: string;
   roles: UserRole[];
   buyerId: string;
-  sellerId?: string;
   bonusBalance: number;
+  phone?: string;
+}
+
+export interface RegisterBuyerData {
+  email: string;
+  password: string;
+  fullName: string;
+  phone?: string;
 }
 
 export interface AuthContextType {
@@ -18,5 +25,6 @@ export interface AuthContextType {
   isSeller: boolean;
   isAdmin: boolean;
   login: (email: string, password?: string) => Promise<{ success: boolean; user?: User; error?: string }>;
+  registerBuyer: (data: RegisterBuyerData) => Promise<{ success: boolean; user?: User; error?: string }>;
   logout: () => void;
 }

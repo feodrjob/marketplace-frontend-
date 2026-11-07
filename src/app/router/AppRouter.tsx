@@ -10,7 +10,8 @@ export function AppRouter() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/catalog" element={<CatalogPage />} />
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/login" element={<LoginPage initialMode="login" />} />
+      <Route path="/register" element={<LoginPage initialMode="register" />} />
       <Route path="/profile" element={<LoginPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
