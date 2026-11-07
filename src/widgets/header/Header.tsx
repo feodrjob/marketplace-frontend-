@@ -65,14 +65,25 @@ export function Header() {
               </Link>
             </Group>
           ) : (
-            <Button
-              color="brandBlue"
-              radius="sm"
-              size="xs"
-              onClick={() => navigate("/login")}
-            >
-              Войти
-            </Button>
+            <Group gap={8}>
+              <Button
+                variant="subtle"
+                color="gray"
+                radius="sm"
+                size="xs"
+                onClick={() => navigate("/register")}
+              >
+                Регистрация
+              </Button>
+              <Button
+                color="brandBlue"
+                radius="sm"
+                size="xs"
+                onClick={() => navigate("/login")}
+              >
+                Войти
+              </Button>
+            </Group>
           )}
         </Box>
       </Container>
