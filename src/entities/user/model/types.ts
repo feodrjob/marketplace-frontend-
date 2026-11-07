@@ -6,7 +6,6 @@ export interface User {
   name: string;
   roles: UserRole[];
   buyerId: string;
-  sellerId?: string;
   bonusBalance: number;
   phone?: string;
 }
