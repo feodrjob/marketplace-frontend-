@@ -60,6 +60,26 @@ pnpm run dev
 pnpm run build
 ```
 
+### 4. Запуск в Docker
+
+Сборка и запуск контейнера через Docker Compose:
+
+```bash
+docker compose up --build -d
+```
+
+Приложение будет доступно по адресу `http://localhost:8080`.
+
+Или стандартными командами Docker CLI:
+
+```bash
+# Сборка multi-stage образа
+docker build -t marketplace-frontend:latest .
+
+# Запуск контейнера
+docker run -d -p 8080:80 --name marketplace-frontend marketplace-frontend:latest
+```
+
 ---
 
 ## Структура проекта (Feature-Sliced Design)
