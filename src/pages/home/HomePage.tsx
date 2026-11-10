@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Title, Text, Button, Paper, Group, Stack, Code, Table } from '@mantine/core';
-import { apiClient } from '@/shared/api';
+import { Button, Code, Paper, Stack, Table, Text, Title } from '@mantine/core';
+import { useState } from 'react';
 import { useAuth } from '@/entities/user';
+import { apiClient } from '@/shared/api';
 import classes from './HomePage.module.css';
 
 export function HomePage() {
@@ -19,8 +19,8 @@ export function HomePage() {
           'f[category]': 'electronics',
           'f[price]': '1000,25000',
           sort: 'price,asc',
-          limit: 4
-        }
+          limit: 4,
+        },
       });
       const duration = Math.round(performance.now() - start);
       setApiResponse(
@@ -43,8 +43,9 @@ export function HomePage() {
           Маркетплейс «Т-Маркет»
         </Title>
         <Text className={classes.description}>
-          Стек проекта: React 18, TypeScript, Mantine v7, Axios с безопасной авторизацией в оперативной памяти
-          (In-Memory closure), React Router v7. Архитектура построена по методологии Feature-Sliced Design.
+          Стек проекта: React 18, TypeScript, Mantine v7, Axios с безопасной авторизацией в
+          оперативной памяти (In-Memory closure), React Router v7. Архитектура построена по
+          методологии Feature-Sliced Design.
         </Text>
 
         <div className={classes.actionRow}>
@@ -59,7 +60,10 @@ export function HomePage() {
           </Button>
           {isAuthenticated && (
             <Text fz={13} c="#374151">
-              Активная сессия: <Text component="span" fw={600}>{user?.name}</Text>
+              Активная сессия:{' '}
+              <Text component="span" fw={600}>
+                {user?.name}
+              </Text>
             </Text>
           )}
         </div>
@@ -108,7 +112,8 @@ export function HomePage() {
                   Обновление сессии
                 </Table.Td>
                 <Table.Td fz={13} c="#4b5563">
-                  Silent Refresh через HttpOnly Cookie (Path: <code>/api/v1/auth</code>) при F5 и 401 перехватчике
+                  Silent Refresh через HttpOnly Cookie (Path: <code>/api/v1/auth</code>) при F5 и
+                  401 перехватчике
                 </Table.Td>
               </Table.Tr>
 
@@ -117,7 +122,8 @@ export function HomePage() {
                   Согласованный контракт
                 </Table.Td>
                 <Table.Td fz={13} c="#4b5563">
-                  <code>docs/api-contract.md</code> (фильтрация, курсорная пагинация, сущности User/Buyer/Seller)
+                  <code>docs/api-contract.md</code> (фильтрация, курсорная пагинация, сущности
+                  User/Buyer/Seller)
                 </Table.Td>
               </Table.Tr>
             </Table.Tbody>

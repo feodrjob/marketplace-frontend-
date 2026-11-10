@@ -1,6 +1,5 @@
-import React from 'react';
-import { Header } from '@/widgets/header';
 import { Footer } from '@/widgets/footer';
+import { Header } from '@/widgets/header';
 import { BottomNav } from '@/widgets/navbar';
 import { AppRouter } from './router';
 

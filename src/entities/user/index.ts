@@ -1,2 +1,2 @@
 export { AuthProvider, useAuth } from './model/AuthContext';
-export type { User, UserRole, AuthContextType } from './model/types';
+export type { AuthContextType, User, UserRole } from './model/types';

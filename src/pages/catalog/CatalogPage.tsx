@@ -1,17 +1,16 @@
-import React, { useState } from "react";
 import {
-  Title,
-  Text,
-  Stack,
+  Button,
+  Card,
   Paper,
-  Group,
-  TextInput,
   Select,
   SimpleGrid,
-  Card,
-  Button,
-} from "@mantine/core";
-import classes from "./CatalogPage.module.css";
+  Stack,
+  Text,
+  TextInput,
+  Title,
+} from '@mantine/core';
+import { useState } from 'react';
+import classes from './CatalogPage.module.css';
 
 interface ProductItem {
   id: number;
@@ -23,29 +22,29 @@ interface ProductItem {
 const DEMO_PRODUCTS: ProductItem[] = [
   {
     id: 1,
-    title: "Беспроводные наушники Pro",
-    category: "electronics",
+    title: 'Беспроводные наушники Pro',
+    category: 'electronics',
     price: 4990,
   },
-  { id: 2, title: "Умные часы FitPulse", category: "electronics", price: 8490 },
+  { id: 2, title: 'Умные часы FitPulse', category: 'electronics', price: 8490 },
   {
     id: 3,
-    title: "Механическая клавиатура RGB",
-    category: "electronics",
+    title: 'Механическая клавиатура RGB',
+    category: 'electronics',
     price: 6200,
   },
   {
     id: 4,
-    title: "Портативная колонка Boom",
-    category: "electronics",
+    title: 'Портативная колонка Boom',
+    category: 'electronics',
     price: 3500,
   },
 ];
 
 export function CatalogPage() {
-  const [category, setCategory] = useState<string | null>("electronics");
-  const [priceRange, setPriceRange] = useState("1000,25000");
-  const [sort, setSort] = useState<string | null>("price,asc");
+  const [category, setCategory] = useState<string | null>('electronics');
+  const [priceRange, setPriceRange] = useState('1000,25000');
+  const [sort, setSort] = useState<string | null>('price,asc');
 
   return (
     <Stack gap={24}>
@@ -54,8 +53,7 @@ export function CatalogPage() {
           Каталог товаров
         </Title>
         <Text className={classes.subtitle}>
-          Пример интеграции параметров фильтрации по контракту (GET
-          /api/v1/products)
+          Пример интеграции параметров фильтрации по контракту (GET /api/v1/products)
         </Text>
       </div>
 
@@ -68,9 +66,9 @@ export function CatalogPage() {
             value={category}
             onChange={setCategory}
             data={[
-              { value: "all", label: "Все категории" },
-              { value: "electronics", label: "Электроника (electronics)" },
-              { value: "clothes", label: "Одежда (clothes)" },
+              { value: 'all', label: 'Все категории' },
+              { value: 'electronics', label: 'Электроника (electronics)' },
+              { value: 'clothes', label: 'Одежда (clothes)' },
             ]}
           />
 
@@ -88,8 +86,8 @@ export function CatalogPage() {
             value={sort}
             onChange={setSort}
             data={[
-              { value: "price,asc", label: "Сначала дешевле (price,asc)" },
-              { value: "price,desc", label: "Сначала дороже (price,desc)" },
+              { value: 'price,asc', label: 'Сначала дешевле (price,asc)' },
+              { value: 'price,desc', label: 'Сначала дороже (price,desc)' },
             ]}
           />
         </SimpleGrid>
@@ -98,18 +96,10 @@ export function CatalogPage() {
       {/* Карточки товаров */}
       <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing={16}>
         {DEMO_PRODUCTS.map((prod) => (
-          <Card
-            key={prod.id}
-            padding="md"
-            radius="sm"
-            withBorder
-            className={classes.productCard}
-          >
+          <Card key={prod.id} padding="md" radius="sm" withBorder className={classes.productCard}>
             <Text className={classes.category}>{prod.category}</Text>
             <Text className={classes.productTitle}>{prod.title}</Text>
-            <Text className={classes.price}>
-              {prod.price.toLocaleString("ru-RU")} ₽
-            </Text>
+            <Text className={classes.price}>{prod.price.toLocaleString('ru-RU')} ₽</Text>
             <Button color="brandBlue" fullWidth radius="sm" size="xs">
               В корзину
             </Button>
