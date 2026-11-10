@@ -8,7 +8,8 @@
 ## Технологический стек
 
 - **UI-библиотека:** [Mantine v7](https://mantine.dev/) (`@mantine/core`, `@mantine/hooks`)
-- **Сетевой клиент:** [Axios](https://axios-http.com/) с интерцепторами, очередью запросов и In-Memory авторизацией
+- **Стейт данных:** [TanStack Query v5](https://tanstack.com/query/latest) (React Query)
+- **Сетевой клиент:** [Axios](https://axios-http.com/) с интерцепторами, очередью запросов и silent refresh
 - **Клиентская маршрутизация:** [React Router v7](https://reactrouter.com/)
 - **Сборщик:** [Vite](https://vite.dev/) + React 18 + TypeScript 5
 - **Архитектура:** Feature-Sliced Design (FSD)
@@ -22,17 +23,19 @@
 
 ### Краткая выжимка договорённостей:
 
-1. **Аутентификация (In-Memory Access Token + Silent Refresh):**
-   - `accessToken` хранится **строго в оперативной памяти** приложения (JS closure), в `localStorage` не сохраняется (защита от XSS).
-   - `refreshToken` передаётся бэкендом в `HttpOnly; Secure; SameSite=Strict` Cookie с директивой `Path=/api/v1/auth`.
-   - При F5 или получении 401 перехватчик Axios автоматически запрашивает новый токен через `POST /api/v1/auth/refresh`.
-   - Защита от мигания интерфейса (FOUS) реализована через Mantine `<Skeleton />` при первичном старте.
-2. **Разделение сущностей пользователей:**
-   - Единая учётная запись `User`, к которой привязаны `BuyerProfile` (обязательный) и `SellerProfile` (опциональный).
-   - Защита от самопокупки на уровне валидации `seller_id`.
-3. **Фильтрация и пагинация каталога:**
+1. **Аутентификация (JWT + Silent Refresh):**
+   - `accessToken` сохраняется в `localStorage` для мгновенного восстановления сессии при F5.
+   - `refreshToken` передаётся бэкендом в защищённой `HttpOnly; Secure; SameSite=Strict` Cookie с директивой `Path=/api/v1/auth`.
+   - При 401 перехватчик Axios автоматически запрашивает новый токен через `POST /api/v1/auth/refresh`.
+2. **Разделение сущностей пользователей и организаций:**
+   - `User` — физлицо (покупатель).
+   - Кабинет продавца вынесен в отдельную сущность `Organization` (магазин/юрлицо), к которой сотрудники подключаются через `OrganizationMember` с ролями (CASL).
+3. **Единый контракт обработки ошибок (RFC 7807):**
+   - Ошибки полей форм: статус `422 Unprocessable Entity` с объектом `"details": { "fieldName": "текст" }`.
+   - Общие бизнес-ошибки: статус `400/409/500` с `title` / `detail` для вывода во всплывающие тосты.
+4. **Фильтрация и пагинация каталога:**
    - Формат запроса: `GET /api/v1/products?f[category]=electronics&f[price]=1000,25000&sort=price,asc`.
-   - Для бесконечного скролла используется курсорная пагинация (`cursor=...&limit=20`).
+   - Для бесконечной ленты каталога используется курсорная пагинация (`cursor=...&limit=20`).
 
 ---
 
