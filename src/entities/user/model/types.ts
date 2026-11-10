@@ -10,11 +10,21 @@ export interface User {
   phone?: string;
 }
 
+export interface LoginCredentials {
+  email: string;
+  password?: string;
+}
+
 export interface RegisterBuyerData {
   email: string;
   password: string;
   fullName: string;
   phone?: string;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  user: User;
 }
 
 export interface AuthContextType {

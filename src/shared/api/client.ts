@@ -1,17 +1,21 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 /**
- * Хранение access-токена ИСКЛЮЧИТЕЛЬНО в оперативной памяти модуля (JS closure).
- * Токен не сохраняется в localStorage/sessionStorage, что исключает его кражу через XSS.
+ * Хранение access-токена в localStorage для мгновенного восстановления сессии при F5.
+ * При этом долгоживущий refresh-токен остаётся под полным контролем бэкенда в защищённой HttpOnly Cookie.
  */
-let inMemoryAccessToken: string | null = null;
+const TOKEN_KEY = 'access_token';
 
 export const setAccessToken = (token: string | null): void => {
-  inMemoryAccessToken = token;
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token);
+  } else {
+    localStorage.removeItem(TOKEN_KEY);
+  }
 };
 
 export const getAccessToken = (): string | null => {
-  return inMemoryAccessToken;
+  return localStorage.getItem(TOKEN_KEY);
 };
 
 // Базовый клиент Axios
@@ -23,10 +27,11 @@ export const apiClient = axios.create({
   }
 });
 
-// Перехватчик запросов: автоматическая инъекция JWT Bearer токена из памяти
+// Перехватчик запросов: автоматическая инъекция JWT Bearer токена
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  if (inMemoryAccessToken && config.headers) {
-    config.headers.Authorization = `Bearer ${inMemoryAccessToken}`;
+  const token = getAccessToken();
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthContextType, RegisterBuyerData } from './types';
-import { setAccessToken, silentRefresh, apiClient } from '@/shared/api';
+import { setAccessToken, getAccessToken, silentRefresh } from '@/shared/api';
+import { authApi } from '../api/authApi';
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -8,17 +9,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
 
-  // При первой загрузке (F5) делаем тихий Silent Refresh через HttpOnly Cookie
+  // При старте приложения: проверяем токен в localStorage или пробуем тихий Silent Refresh
   useEffect(() => {
     let isMounted = true;
 
     const restoreSession = async () => {
       try {
-        const token = await silentRefresh();
+        let token = getAccessToken();
+        if (!token) {
+          // Если в localStorage токена нет, пробуем получить его через HttpOnly Cookie
+          token = await silentRefresh();
+        }
+
         if (token && isMounted) {
-          // Если бэкенд подтвердил сессию, запрашиваем профиль
-          const res = await apiClient.get<User>('/user/profile');
-          setUser(res.data);
+          const profile = await authApi.getProfile();
+          if (isMounted) setUser(profile);
         }
       } catch {
         // Сессия отсутствует или истекла
@@ -39,60 +44,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password = ''): Promise<{ success: boolean; user?: User; error?: string }> => {
     try {
-      const response = await apiClient.post<{ accessToken: string; user: User }>('/auth/login', {
-        email,
-        password
-      });
-
-      const { accessToken, user: loggedUser } = response.data;
+      const { accessToken, user: loggedUser } = await authApi.login({ email, password });
       setAccessToken(accessToken);
       setUser(loggedUser);
       return { success: true, user: loggedUser };
     } catch (err: unknown) {
-      // Для демонстрации в оффлайне / мок-режиме:
-      const mockUser: User = {
-        id: '1',
-        email,
-        name: email.split('@')[0] || 'Покупатель',
-        roles: ['ROLE_BUYER'],
-        buyerId: 'buyer-uuid-1',
-        bonusBalance: 15000
-      };
-      setAccessToken(`mock_jwt_token_${Date.now()}`);
-      setUser(mockUser);
-      return { success: true, user: mockUser };
+      return { success: false, error: 'Ошибка авторизации' };
     }
   };
 
   const registerBuyer = async (data: RegisterBuyerData): Promise<{ success: boolean; user?: User; error?: string }> => {
     try {
-      const response = await apiClient.post<{ accessToken: string; user: User }>('/auth/register/buyer', data);
-      const { accessToken, user: registeredUser } = response.data;
+      const { accessToken, user: registeredUser } = await authApi.registerBuyer(data);
       setAccessToken(accessToken);
       setUser(registeredUser);
       return { success: true, user: registeredUser };
     } catch (err: unknown) {
-      // Для демонстрации в оффлайне / мок-режиме:
-      const mockUser: User = {
-        id: `buyer-${Date.now()}`,
-        email: data.email,
-        name: data.fullName,
-        roles: ['ROLE_BUYER'],
-        buyerId: `buyer-uuid-${Date.now()}`,
-        phone: data.phone,
-        bonusBalance: 500 // Приветственные бонусы новому покупателю
-      };
-      setAccessToken(`mock_jwt_token_${Date.now()}`);
-      setUser(mockUser);
-      return { success: true, user: mockUser };
+      return { success: false, error: 'Ошибка регистрации' };
     }
   };
 
   const logout = async () => {
     try {
-      await apiClient.post('/auth/logout');
-    } catch {
-      // Игнорируем сетевые ошибки при выходе
+      await authApi.logout();
     } finally {
       setAccessToken(null);
       setUser(null);

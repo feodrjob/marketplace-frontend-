@@ -1,2 +1,10 @@
 export { AuthProvider, useAuth } from './model/AuthContext';
-export type { User, UserRole, AuthContextType, RegisterBuyerData } from './model/types';
+export { authApi } from './api/authApi';
+export type {
+  User,
+  UserRole,
+  AuthContextType,
+  LoginCredentials,
+  RegisterBuyerData,
+  AuthResponse
+} from './model/types';
