@@ -12,7 +12,7 @@ export interface User {
 
 export interface LoginCredentials {
   email: string;
-  password?: string;
+  password: string;
 }
 
 export interface RegisterBuyerData {
@@ -30,11 +30,9 @@ export interface AuthResponse {
 export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  isInitializing: boolean;
+  isLoading: boolean;
+  isFetching: boolean;
   isBuyer: boolean;
   isSeller: boolean;
   isAdmin: boolean;
-  login: (email: string, password?: string) => Promise<{ success: boolean; user?: User; error?: string }>;
-  registerBuyer: (data: RegisterBuyerData) => Promise<{ success: boolean; user?: User; error?: string }>;
-  logout: () => void;
 }

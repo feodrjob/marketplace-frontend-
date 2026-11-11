@@ -1,26 +1,25 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { ELocalKey, ENV } from '@/shared/config';
 
 /**
  * Хранение access-токена в localStorage для мгновенного восстановления сессии при F5.
- * При этом долгоживущий refresh-токен остаётся под полным контролем бэкенда в защищённой HttpOnly Cookie.
+ * Долгоживущий refresh-токен остаётся под контролем бэкенда в HttpOnly Cookie.
  */
-const TOKEN_KEY = 'access_token';
-
 export const setAccessToken = (token: string | null): void => {
   if (token) {
-    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(ELocalKey.ACCESS_TOKEN, token);
   } else {
-    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(ELocalKey.ACCESS_TOKEN);
   }
 };
 
 export const getAccessToken = (): string | null => {
-  return localStorage.getItem(TOKEN_KEY);
+  return localStorage.getItem(ELocalKey.ACCESS_TOKEN);
 };
 
 // Базовый клиент Axios
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api/v1',
+  baseURL: ENV.API_URL,
   withCredentials: true, // КРИТИЧНО: автоматическая отправка HttpOnly Cookie (refresh-токен)
   headers: {
     'Content-Type': 'application/json'
@@ -61,7 +60,7 @@ const processQueue = (error: unknown, token: string | null = null) => {
 export const silentRefresh = async (): Promise<string | null> => {
   try {
     const response = await axios.post<{ accessToken: string }>(
-      `${import.meta.env.VITE_API_URL || '/api/v1'}/auth/refresh`,
+      `${ENV.API_URL}/auth/refresh`,
       {},
       { withCredentials: true }
     );
