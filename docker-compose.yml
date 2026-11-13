@@ -5,5 +5,5 @@ services:
       dockerfile: Dockerfile
     container_name: marketplace-frontend
     ports:
-      - "8080:80"
+      - "8082:80"
     restart: unless-stopped
