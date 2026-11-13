@@ -1,4 +1,4 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
 /**
  * Хранение access-токена ИСКЛЮЧИТЕЛЬНО в оперативной памяти модуля (JS closure).
@@ -19,8 +19,8 @@ export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api/v1',
   withCredentials: true, // КРИТИЧНО: автоматическая отправка HttpOnly Cookie (refresh-токен)
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'application/json',
+  },
 });
 
 // Перехватчик запросов: автоматическая инъекция JWT Bearer токена из памяти
@@ -73,7 +73,9 @@ export const silentRefresh = async (): Promise<string | null> => {
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
+    const originalRequest = error.config as
+      | (InternalAxiosRequestConfig & { _retry?: boolean })
+      | undefined;
 
     // Если получили 401 Unauthorized и это не сам запрос рефреша
     if (

@@ -1,6 +1,18 @@
-import React, { useState } from 'react';
+import {
+  Alert,
+  Button,
+  Container,
+  Paper,
+  PasswordInput,
+  Stack,
+  Table,
+  Text,
+  TextInput,
+  Title,
+} from '@mantine/core';
+import type React from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Paper, Title, Text, TextInput, PasswordInput, Button, Stack, Alert, Table } from '@mantine/core';
 import { useAuth } from '@/entities/user';
 import classes from './LoginPage.module.css';
 
@@ -31,32 +43,45 @@ export function LoginPage() {
   if (isAuthenticated && user) {
     return (
       <Container size={420} my={30}>
-        <Title className={classes.title}>
-          Личный кабинет
-        </Title>
-        <Text className={classes.subtitle}>
-          Авторизованная сессия (In-Memory JWT)
-        </Text>
+        <Title className={classes.title}>Личный кабинет</Title>
+        <Text className={classes.subtitle}>Авторизованная сессия (In-Memory JWT)</Text>
 
         <Paper className={classes.card} p={24} radius="sm" withBorder>
           <Table verticalSpacing="xs" mb="lg">
             <Table.Tbody>
               <Table.Tr>
-                <Table.Td w={140} fw={500} fz={13} c="#374151">Имя</Table.Td>
-                <Table.Td fz={13} c="#111827" fw={600}>{user.name}</Table.Td>
+                <Table.Td w={140} fw={500} fz={13} c="#374151">
+                  Имя
+                </Table.Td>
+                <Table.Td fz={13} c="#111827" fw={600}>
+                  {user.name}
+                </Table.Td>
               </Table.Tr>
               <Table.Tr>
-                <Table.Td fw={500} fz={13} c="#374151">Email</Table.Td>
-                <Table.Td fz={13} c="#4b5563">{user.email}</Table.Td>
+                <Table.Td fw={500} fz={13} c="#374151">
+                  Email
+                </Table.Td>
+                <Table.Td fz={13} c="#4b5563">
+                  {user.email}
+                </Table.Td>
               </Table.Tr>
               <Table.Tr>
-                <Table.Td fw={500} fz={13} c="#374151">Бонусный баланс</Table.Td>
-                <Table.Td fz={13} c="#085fc6" fw={600} style={{ fontVariantNumeric: 'tabular-nums' }}>
+                <Table.Td fw={500} fz={13} c="#374151">
+                  Бонусный баланс
+                </Table.Td>
+                <Table.Td
+                  fz={13}
+                  c="#085fc6"
+                  fw={600}
+                  style={{ fontVariantNumeric: 'tabular-nums' }}
+                >
                   {user.bonusBalance.toLocaleString('ru-RU')} бонусов
                 </Table.Td>
               </Table.Tr>
               <Table.Tr>
-                <Table.Td fw={500} fz={13} c="#374151">Роль в системе</Table.Td>
+                <Table.Td fw={500} fz={13} c="#374151">
+                  Роль в системе
+                </Table.Td>
                 <Table.Td fz={13} c="#4b5563">
                   {user.roles.includes('ROLE_BUYER') ? 'Покупатель (BuyerProfile)' : 'Пользователь'}
                 </Table.Td>
@@ -64,13 +89,7 @@ export function LoginPage() {
             </Table.Tbody>
           </Table>
 
-          <Button
-            variant="light"
-            color="red"
-            fullWidth
-            radius="sm"
-            onClick={logout}
-          >
+          <Button variant="light" color="red" fullWidth radius="sm" onClick={logout}>
             Выйти из аккаунта
           </Button>
         </Paper>
@@ -81,9 +100,7 @@ export function LoginPage() {
   // Если не авторизован — форма входа
   return (
     <Container size={420} my={30}>
-      <Title className={classes.title}>
-        Вход в систему
-      </Title>
+      <Title className={classes.title}>Вход в систему</Title>
       <Text className={classes.subtitle}>
         Токен сохраняется в памяти приложения (In-Memory closure)
       </Text>

@@ -1,6 +1,5 @@
-import React from 'react';
+import { Button, Container, Paper, Stack, Text, Title } from '@mantine/core';
 import { Link } from 'react-router-dom';
-import { Container, Paper, Title, Text, Button, Stack } from '@mantine/core';
 
 export function NotFoundPage() {
   return (
