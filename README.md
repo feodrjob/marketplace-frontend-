@@ -65,10 +65,11 @@ pnpm run build
 Сборка и запуск контейнера через Docker Compose:
 
 ```bash
+cp .env.example .env   # при необходимости поправь BACKEND_URL и FRONTEND_PORT
 docker compose up --build -d
 ```
 
-Приложение будет доступно по адресу `http://localhost:8080`.
+Приложение будет доступно по адресу `http://localhost:8082`.
 
 Или стандартными командами Docker CLI:
 
@@ -77,8 +78,26 @@ docker compose up --build -d
 docker build -t marketplace-frontend:latest .
 
 # Запуск контейнера
-docker run -d -p 8080:80 --name marketplace-frontend marketplace-frontend:latest
+docker run -d -p 8082:80 \
+  --add-host host.docker.internal:host-gateway \
+  -e BACKEND_URL=http://host.docker.internal:8080 \
+  --name marketplace-frontend marketplace-frontend:latest
 ```
+
+#### Переменные окружения
+
+| Переменная | Тип | Где задаётся | Назначение |
+|---|---|---|---|
+| `BACKEND_URL` | runtime | `docker compose` / `docker run -e` | Адрес API Gateway, на который nginx проксирует `/api/*`. Меняется без пересборки образа |
+| `FRONTEND_PORT` | runtime | `.env` для compose | Порт фронтенда на хосте (по умолчанию `8082`) |
+| `VITE_USE_MOCKS` | build-time | `build.args` / `--build-arg` | Включает моки API. В Docker-образе всегда `false` |
+| `VITE_API_URL` | build-time | `--build-arg` (опционально) | Базовый URL API. Обычно не нужен: используется относительный `/api/v1` |
+
+Почему так:
+
+- **`VITE_*` — compile-time.** Vite вшивает значения в JS на этапе `vite build`, поэтому они передаются только build-аргументами. `docker run -e VITE_...` на собранный образ не влияет.
+- **`BACKEND_URL` — runtime.** Nginx при старте контейнера подставляет его в `nginx.conf.template` через `envsubst`. Один и тот же образ работает в dev/stage/prod, а смена бэкенда — это перезапуск контейнера без пересборки и повторного пуша в ghcr.
+- **Cookies и CORS.** Фронтенд и API находятся на одном origin (`/api/v1`), поэтому HttpOnly-cookie с refresh-токеном работает без настройки CORS и `SameSite`.
 
 ---
 

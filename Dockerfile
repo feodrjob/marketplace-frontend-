@@ -12,6 +12,13 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml* ./
 RUN pnpm install --frozen-lockfile
 
+# Compile-time env. Vite вшивает VITE_* в бандл на этапе сборки,
+# поэтому такие значения передаются build-arg'ами.
+# Адрес API здесь не нужен: фронтенд ходит на относительный /api/v1,
+# а на бэкенд его проксирует nginx (см. BACKEND_URL в runner-стадии).
+ARG VITE_USE_MOCKS=false
+ENV VITE_USE_MOCKS=$VITE_USE_MOCKS
+
 # Copy source code and build production assets
 COPY . .
 RUN pnpm run build
@@ -21,14 +28,19 @@ RUN pnpm run build
 # ==========================================
 FROM nginx:1.27-alpine AS runner
 
+# Runtime env. Читается nginx при старте контейнера (envsubst),
+# поэтому смена адреса бэкенда не требует пересборки образа.
+ENV BACKEND_URL=http://host.docker.internal:8080
+
 # Remove default nginx static files
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy compiled assets from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy custom Nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Официальный образ nginx подставит BACKEND_URL в шаблон при старте
+# и положит результат в /etc/nginx/conf.d/default.conf
+COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 
 # Expose standard HTTP port
 EXPOSE 80
