@@ -1,0 +1,77 @@
+# Шаблон конфигурации nginx.
+# Официальный образ nginx при старте контейнера подставляет переменные окружения
+# (/docker-entrypoint.d/20-envsubst-on-templates.sh) и кладёт результат в
+# /etc/nginx/conf.d/default.conf.
+#
+# BACKEND_URL — адрес API Gateway, доступный из контейнера (без завершающего слэша).
+# Пример: http://host.docker.internal:8080 или http://backend:8080
+
+server {
+    listen 80;
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Загрузка изображений товаров (Media Service принимает файлы до 10 МБ)
+    client_max_body_size 12m;
+
+    # Gzip Compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_types
+        text/plain
+        text/css
+        text/xml
+        text/javascript
+        application/x-javascript
+        application/xml
+        application/javascript
+        application/json
+        image/svg+xml;
+    gzip_disable "MSIE [1-6]\.";
+
+    # Security headers
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    # API Gateway: фронтенд ходит на относительный /api/v1,
+    # nginx проксирует запросы на бэкенд. Адрес берётся из env при старте,
+    # поэтому один и тот же образ работает в dev/stage/prod без пересборки.
+    location /api/ {
+        proxy_pass ${BACKEND_URL};
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Port $server_port;
+
+        proxy_connect_timeout 10s;
+        proxy_read_timeout 60s;
+        proxy_send_timeout 60s;
+    }
+
+    # Cache hashed static assets permanently
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    # SPA routing: fallback all routes to index.html
+    location / {
+        try_files $uri $uri/ /index.html;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+    }
+
+    # Error handling
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html;
+    }
+}
