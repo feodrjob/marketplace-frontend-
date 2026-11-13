@@ -17,6 +17,9 @@ export interface AuthContextType {
   isBuyer: boolean;
   isSeller: boolean;
   isAdmin: boolean;
-  login: (email: string, password?: string) => Promise<{ success: boolean; user?: User; error?: string }>;
+  login: (
+    email: string,
+    password?: string
+  ) => Promise<{ success: boolean; user?: User; error?: string }>;
   logout: () => void;
 }

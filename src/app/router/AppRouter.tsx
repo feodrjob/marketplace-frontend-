@@ -1,7 +1,6 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { HomePage } from '@/pages/home';
+import { Route, Routes } from 'react-router-dom';
 import { CatalogPage } from '@/pages/catalog';
+import { HomePage } from '@/pages/home';
 import { LoginPage } from '@/pages/login';
 import { NotFoundPage } from '@/pages/not-found';
 

@@ -1,8 +1,10 @@
-import React, { ReactNode } from "react";
-import { BrowserRouter } from "react-router-dom";
-import { MantineProvider } from "@mantine/core";
-import { theme } from "@/theme";
-import { AuthProvider } from "@/entities/user";
+import { MantineProvider } from '@mantine/core';
+import { QueryClientProvider } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from '@/entities/user';
+import { queryClient } from '@/shared/api';
+import { theme } from '@/theme';
 
 export interface AppProvidersProps {
   children: ReactNode;
@@ -10,11 +12,13 @@ export interface AppProvidersProps {
 
 export function AppProviders({ children }: AppProvidersProps) {
   return (
-    <MantineProvider theme={theme}>
-      <BrowserRouter>
-        <AuthProvider>{children}</AuthProvider>
-      </BrowserRouter>
-    </MantineProvider>
+    <QueryClientProvider client={queryClient}>
+      <MantineProvider theme={theme}>
+        <BrowserRouter>
+          <AuthProvider>{children}</AuthProvider>
+        </BrowserRouter>
+      </MantineProvider>
+    </QueryClientProvider>
   );
 }
 

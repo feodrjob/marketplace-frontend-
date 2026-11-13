@@ -6,21 +6,33 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "biome lint ./src",
+    "lint:fix": "biome lint --write ./src",
+    "format": "biome format --write ./src",
+    "check": "biome check ./src && tsc --noEmit",
+    "check:fix": "biome check --write ./src",
+    "prepare": "simple-git-hooks"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm run check"
   },
   "dependencies": {
     "@mantine/core": "7.16.0",
     "@mantine/hooks": "7.16.0",
+    "@tanstack/react-query": "^5.107.1",
     "axios": "^1.7.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.0.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.6.6",
     "@types/node": "^22.10.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "simple-git-hooks": "2.14.0",
     "typescript": "^5.7.2",
     "vite": "^6.0.1"
   }

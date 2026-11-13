@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, AuthContextType } from './types';
-import { setAccessToken, silentRefresh, apiClient } from '@/shared/api';
+import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
+import { apiClient, setAccessToken, silentRefresh } from '@/shared/api';
+import type { AuthContextType, User } from './types';
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -37,18 +37,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const login = async (email: string, password = ''): Promise<{ success: boolean; user?: User; error?: string }> => {
+  const login = async (
+    email: string,
+    password = ''
+  ): Promise<{ success: boolean; user?: User; error?: string }> => {
     try {
       const response = await apiClient.post<{ accessToken: string; user: User }>('/auth/login', {
         email,
-        password
+        password,
       });
 
       const { accessToken, user: loggedUser } = response.data;
       setAccessToken(accessToken);
       setUser(loggedUser);
       return { success: true, user: loggedUser };
-    } catch (err: unknown) {
+    } catch (_err: unknown) {
       // Для демонстрации в оффлайне / мок-режиме:
       const mockUser: User = {
         id: '1',
@@ -56,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: email.split('@')[0] || 'Пользователь',
         roles: ['ROLE_BUYER'],
         buyerId: 'buyer-uuid-1',
-        bonusBalance: 15000
+        bonusBalance: 15000,
       };
       setAccessToken(`mock_jwt_token_${Date.now()}`);
       setUser(mockUser);
@@ -87,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isSeller: roles.includes('ROLE_SELLER'),
         isAdmin: roles.includes('ROLE_ADMIN'),
         login,
-        logout
+        logout,
       }}
     >
       {children}
