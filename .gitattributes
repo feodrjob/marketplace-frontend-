@@ -1,0 +1,15 @@
+# Единые переводы строк для всей команды (включая Windows).
+# Иначе core.autocrlf=true делает CRLF в рабочей папке и Biome падает на форматировании.
+* text=auto eol=lf
+
+# Бинарные файлы не трогаем
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
