@@ -1,21 +1,22 @@
-import React from 'react';
 import {
-  Title,
-  Text,
-  Stack,
+  Button,
+  Card,
   Paper,
-  TextInput,
   Select,
   SimpleGrid,
-  Card,
-  Button,
   Skeleton,
+  Stack,
+  Text,
+  TextInput,
+  Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDebouncedValue } from '@mantine/hooks';
-import { ProductFilters, useProductsQuery } from '@/entities/product';
+import { type ProductFilters, useProductsQuery } from '@/entities/product';
 import { Formatter } from '@/shared/lib';
 import classes from './CatalogPage.module.css';
+
+const SKELETON_KEYS = ['skeleton-1', 'skeleton-2', 'skeleton-3', 'skeleton-4'] as const;
 
 export function CatalogPage() {
   const form = useForm<ProductFilters>({
@@ -83,8 +84,8 @@ export function CatalogPage() {
       {/* Карточки товаров */}
       {isLoading ? (
         <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing={16}>
-          {Array.from({ length: 4 }).map((_, index) => (
-            <Skeleton key={index} height={156} radius="sm" />
+          {SKELETON_KEYS.map((key) => (
+            <Skeleton key={key} height={156} radius="sm" />
           ))}
         </SimpleGrid>
       ) : products.length === 0 ? (
@@ -96,13 +97,7 @@ export function CatalogPage() {
       ) : (
         <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing={16}>
           {products.map((prod) => (
-            <Card
-              key={prod.id}
-              padding="md"
-              radius="sm"
-              withBorder
-              className={classes.productCard}
-            >
+            <Card key={prod.id} padding="md" radius="sm" withBorder className={classes.productCard}>
               <Text className={classes.category}>{prod.category}</Text>
               <Text className={classes.productTitle}>{prod.title}</Text>
               <Text className={classes.price}>{Formatter.price(prod.price)}</Text>

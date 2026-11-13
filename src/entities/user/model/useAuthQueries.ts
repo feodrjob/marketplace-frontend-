@@ -1,11 +1,11 @@
-import axios from 'axios';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 import { getAccessToken, setAccessToken, silentRefresh } from '@/shared/api';
 import { ENV } from '@/shared/config';
 import { getErrorMessage, getValidationErrors } from '@/shared/lib';
 import { authApi } from '../api/authApi';
-import { AuthResponse, LoginCredentials, RegisterBuyerData, User } from './types';
+import type { AuthResponse, LoginCredentials, RegisterBuyerData, User } from './types';
 
 export const AUTH_QUERY_KEYS = {
   all: ['user'] as const,

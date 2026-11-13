@@ -1,6 +1,6 @@
 import { apiClient } from '@/shared/api';
 import { ENV } from '@/shared/config';
-import { ProductFilters, ProductItem, ProductListResponse } from '../model/types';
+import type { ProductFilters, ProductItem, ProductListResponse } from '../model/types';
 import { getMockProducts } from './productMocks';
 
 export const productApi = {

@@ -1,8 +1,8 @@
-import React from 'react';
-import { Title, Text, Button, Paper, Stack, Code, SimpleGrid, Alert } from '@mantine/core';
+import { Alert, Button, Code, Paper, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import { useMutation } from '@tanstack/react-query';
-import { apiClient } from '@/shared/api';
+import React from 'react';
 import { useAuth } from '@/entities/user';
+import { apiClient } from '@/shared/api';
 import { getErrorMessage } from '@/shared/lib';
 import classes from './HomePage.module.css';
 
@@ -17,7 +17,8 @@ const ENVIRONMENT_SPECS = [
   },
   {
     label: 'Хранение токенов',
-    value: 'Access-токен в localStorage (ELocalKey.ACCESS_TOKEN) + Silent Refresh через HttpOnly Cookie',
+    value:
+      'Access-токен в localStorage (ELocalKey.ACCESS_TOKEN) + Silent Refresh через HttpOnly Cookie',
   },
   {
     label: 'Валидация форм',
@@ -52,8 +53,9 @@ export function HomePage() {
           Маркетплейс «Т-Маркет»
         </Title>
         <Text className={classes.description}>
-          Стек проекта: React 18, TypeScript, Mantine v7, TanStack Query v5, Axios с Bearer-авторизацией и Silent
-          Refresh через HttpOnly Cookie, React Router v7. Архитектура построена по методологии Feature-Sliced Design.
+          Стек проекта: React 18, TypeScript, Mantine v7, TanStack Query v5, Axios с
+          Bearer-авторизацией и Silent Refresh через HttpOnly Cookie, React Router v7. Архитектура
+          построена по методологии Feature-Sliced Design.
         </Text>
 
         <div className={classes.actionRow}>

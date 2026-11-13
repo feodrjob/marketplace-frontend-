@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react';
-import { Container, Paper, Title, Text } from '@mantine/core';
+import { Container, Paper, Text, Title } from '@mantine/core';
+import type { ReactNode } from 'react';
 
 export interface AuthCardLayoutProps {
   title: string;

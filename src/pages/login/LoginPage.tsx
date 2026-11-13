@@ -1,15 +1,10 @@
-import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { TextInput, PasswordInput, Button, Stack, Alert, Anchor, Text } from '@mantine/core';
+import { Alert, Anchor, Button, PasswordInput, Stack, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { zodResolver } from 'mantine-form-zod-resolver';
-import {
-  loginSchema,
-  LoginFormValues,
-  useLoginMutation,
-} from '@/entities/user';
-import { AuthCardLayout } from '@/shared/ui';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { type LoginFormValues, loginSchema, useLoginMutation } from '@/entities/user';
 import { getErrorMessage, getValidationErrors } from '@/shared/lib';
+import { AuthCardLayout } from '@/shared/ui';
 
 interface LocationState {
   from?: {

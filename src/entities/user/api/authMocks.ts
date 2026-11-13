@@ -1,4 +1,4 @@
-import { AuthResponse, LoginCredentials, RegisterBuyerData, User } from '../model/types';
+import type { AuthResponse, LoginCredentials, RegisterBuyerData, User } from '../model/types';
 
 let mockCurrentUser: User | null = {
   id: '1',

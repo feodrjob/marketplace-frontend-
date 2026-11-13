@@ -1,13 +1,12 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { HomePage } from '@/pages/home';
+import { Route, Routes } from 'react-router-dom';
 import { CatalogPage } from '@/pages/catalog';
+import { HomePage } from '@/pages/home';
 import { LoginPage } from '@/pages/login';
-import { RegisterPage } from '@/pages/register';
-import { ProfilePage } from '@/pages/profile';
 import { NotFoundPage } from '@/pages/not-found';
-import { ProtectedRoute } from './ProtectedRoute';
+import { ProfilePage } from '@/pages/profile';
+import { RegisterPage } from '@/pages/register';
 import { GuestRoute } from './GuestRoute';
+import { ProtectedRoute } from './ProtectedRoute';
 
 export function AppRouter() {
   return (

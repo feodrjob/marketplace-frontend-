@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { productApi } from '../api/productApi';
-import { ProductFilters, ProductItem } from './types';
+import type { ProductFilters, ProductItem } from './types';
 
 export const PRODUCT_QUERY_KEYS = {
   all: ['products'] as const,

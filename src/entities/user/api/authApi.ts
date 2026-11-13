@@ -1,6 +1,6 @@
 import { apiClient } from '@/shared/api';
 import { ENV } from '@/shared/config';
-import { AuthResponse, LoginCredentials, RegisterBuyerData, User } from '../model/types';
+import type { AuthResponse, LoginCredentials, RegisterBuyerData, User } from '../model/types';
 import { authMocks } from './authMocks';
 
 export const authApi = {

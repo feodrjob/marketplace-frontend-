@@ -1,4 +1,4 @@
-import { ProductFilters, ProductItem } from '../model/types';
+import type { ProductFilters, ProductItem } from '../model/types';
 
 const DEMO_PRODUCTS: ProductItem[] = [
   { id: 1, title: 'Беспроводные наушники Pro', category: 'electronics', price: 4990 },

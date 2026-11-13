@@ -1,16 +1,15 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
-  Container,
-  Paper,
-  Title,
-  Text,
-  Button,
   Badge,
-  Group,
-  SimpleGrid,
+  Button,
+  Container,
   Divider,
+  Group,
+  Paper,
+  SimpleGrid,
+  Text,
+  Title,
 } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
 import { useAuth, useLogoutMutation } from '@/entities/user';
 import { Formatter } from '@/shared/lib';
 
@@ -77,12 +76,7 @@ export function ProfilePage() {
           <Text fz={13} fw={500} c="dimmed">
             Бонусный баланс
           </Text>
-          <Text
-            fz={13}
-            c="brandBlue.6"
-            fw={600}
-            style={{ fontVariantNumeric: 'tabular-nums' }}
-          >
+          <Text fz={13} c="brandBlue.6" fw={600} style={{ fontVariantNumeric: 'tabular-nums' }}>
             {Formatter.bonus(user.bonusBalance)}
           </Text>
 

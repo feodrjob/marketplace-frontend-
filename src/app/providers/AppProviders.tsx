@@ -1,12 +1,12 @@
-import React, { ReactNode } from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { QueryClientProvider, QueryErrorResetBoundary } from '@tanstack/react-query';
-import { theme } from '@/theme';
+import type { ReactNode } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from '@/entities/user';
 import { queryClient } from '@/shared/api';
 import { ErrorBoundary } from '@/shared/ui';
-import { AuthProvider } from '@/entities/user';
+import { theme } from '@/theme';
 
 export interface AppProvidersProps {
   children: ReactNode;

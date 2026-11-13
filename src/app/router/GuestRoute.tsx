@@ -1,6 +1,5 @@
-import React from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { Center, Loader } from '@mantine/core';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/entities/user';
 
 interface LocationState {

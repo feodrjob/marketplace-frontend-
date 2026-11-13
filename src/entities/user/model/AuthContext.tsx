@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useMemo, ReactNode } from 'react';
-import { AuthContextType } from './types';
+import { createContext, type ReactNode, useContext, useMemo } from 'react';
+import type { AuthContextType } from './types';
 import { useCurrentUserQuery } from './useAuthQueries';
 
 const AuthContext = createContext<AuthContextType | null>(null);

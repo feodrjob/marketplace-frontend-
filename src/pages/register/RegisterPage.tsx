@@ -1,24 +1,23 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import {
-  TextInput,
-  PasswordInput,
-  Button,
-  Stack,
   Alert,
-  Checkbox,
   Anchor,
+  Button,
+  Checkbox,
+  PasswordInput,
+  Stack,
   Text,
+  TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { zodResolver } from 'mantine-form-zod-resolver';
+import { Link, useNavigate } from 'react-router-dom';
 import {
+  type RegisterBuyerFormValues,
   registerBuyerSchema,
-  RegisterBuyerFormValues,
   useRegisterBuyerMutation,
 } from '@/entities/user';
-import { AuthCardLayout } from '@/shared/ui';
 import { getErrorMessage, getValidationErrors } from '@/shared/lib';
+import { AuthCardLayout } from '@/shared/ui';
 
 export function RegisterPage() {
   const navigate = useNavigate();

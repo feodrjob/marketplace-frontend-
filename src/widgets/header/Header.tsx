@@ -1,6 +1,5 @@
-import React from 'react';
+import { Box, Button, Container, Group, Skeleton, Text } from '@mantine/core';
 import { Link, useLocation } from 'react-router-dom';
-import { Container, Group, Box, Button, Skeleton, Text } from '@mantine/core';
 import { useAuth } from '@/entities/user';
 import { Formatter } from '@/shared/lib';
 import classes from './Header.module.css';
@@ -46,17 +45,11 @@ export function Header() {
             </Group>
           ) : isAuthenticated && user ? (
             <Group gap={6} align="center" wrap="nowrap">
-              <Link
-                to="/profile"
-                className={classes.userLink}
-                title="Перейти в профиль"
-              >
+              <Link to="/profile" className={classes.userLink} title="Перейти в профиль">
                 <Text fz={13} fw={500} style={{ whiteSpace: 'nowrap' }}>
                   {user.name}
                 </Text>
-                <Text className={classes.bonusText}>
-                  {Formatter.bonus(user.bonusBalance)}
-                </Text>
+                <Text className={classes.bonusText}>{Formatter.bonus(user.bonusBalance)}</Text>
               </Link>
             </Group>
           ) : (
@@ -71,13 +64,7 @@ export function Header() {
               >
                 Регистрация
               </Button>
-              <Button
-                component={Link}
-                to="/login"
-                color="brandBlue"
-                radius="sm"
-                size="xs"
-              >
+              <Button component={Link} to="/login" color="brandBlue" radius="sm" size="xs">
                 Войти
               </Button>
             </Group>

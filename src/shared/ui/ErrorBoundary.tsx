@@ -1,5 +1,5 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Container, Paper, Title, Text, Button, Stack, Group } from '@mantine/core';
+import { Button, Container, Group, Paper, Stack, Text, Title } from '@mantine/core';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { getErrorMessage } from '@/shared/lib';
 
 export interface ErrorBoundaryProps {

@@ -1,2 +1,2 @@
-export { apiClient, setAccessToken, getAccessToken, silentRefresh } from './client';
+export { apiClient, getAccessToken, setAccessToken, silentRefresh } from './client';
 export { queryClient } from './queryClient';
