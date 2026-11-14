@@ -1,144 +1,105 @@
-import {
-  Alert,
-  Button,
-  Container,
-  Paper,
-  PasswordInput,
-  Stack,
-  Table,
-  Text,
-  TextInput,
-  Title,
-} from '@mantine/core';
-import type React from 'react';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/entities/user';
-import classes from './LoginPage.module.css';
+import { Alert, Anchor, Button, PasswordInput, Stack, Text, TextInput } from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { zodResolver } from 'mantine-form-zod-resolver';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { type LoginFormValues, loginSchema, useLoginMutation } from '@/entities/user';
+import { getErrorMessage, getValidationErrors } from '@/shared/lib';
+import { AuthCardLayout } from '@/shared/ui';
+
+interface LocationState {
+  from?: {
+    pathname?: string;
+  };
+}
 
 export function LoginPage() {
-  const { user, isAuthenticated, login, logout } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('buyer@t-market.ru');
-  const [password, setPassword] = useState('secret123');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
+  const loginMutation = useLoginMutation();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  const from = (location.state as LocationState | null)?.from?.pathname || '/profile';
 
-    const res = await login(email, password);
-    setLoading(false);
+  const form = useForm<LoginFormValues>({
+    mode: 'uncontrolled',
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validate: zodResolver(loginSchema),
+  });
 
-    if (res.success) {
-      navigate('/');
-    } else {
-      setError(res.error || 'Ошибка входа');
-    }
-  };
+  const handleSubmit = form.onSubmit((values) => {
+    loginMutation.mutate(values, {
+      onSuccess: () => {
+        navigate(from, { replace: true });
+      },
+      onError: (error) => {
+        const details = getValidationErrors(error);
+        if (details) {
+          form.setErrors(details);
+        }
+      },
+    });
+  });
 
-  // Если авторизован — страница Профиля
-  if (isAuthenticated && user) {
-    return (
-      <Container size={420} my={30}>
-        <Title className={classes.title}>Личный кабинет</Title>
-        <Text className={classes.subtitle}>Авторизованная сессия (In-Memory JWT)</Text>
+  const nonFieldError =
+    loginMutation.isError && !getValidationErrors(loginMutation.error)
+      ? getErrorMessage(loginMutation.error, 'Неверный email или пароль')
+      : null;
 
-        <Paper className={classes.card} p={24} radius="sm" withBorder>
-          <Table verticalSpacing="xs" mb="lg">
-            <Table.Tbody>
-              <Table.Tr>
-                <Table.Td w={140} fw={500} fz={13} c="#374151">
-                  Имя
-                </Table.Td>
-                <Table.Td fz={13} c="#111827" fw={600}>
-                  {user.name}
-                </Table.Td>
-              </Table.Tr>
-              <Table.Tr>
-                <Table.Td fw={500} fz={13} c="#374151">
-                  Email
-                </Table.Td>
-                <Table.Td fz={13} c="#4b5563">
-                  {user.email}
-                </Table.Td>
-              </Table.Tr>
-              <Table.Tr>
-                <Table.Td fw={500} fz={13} c="#374151">
-                  Бонусный баланс
-                </Table.Td>
-                <Table.Td
-                  fz={13}
-                  c="#085fc6"
-                  fw={600}
-                  style={{ fontVariantNumeric: 'tabular-nums' }}
-                >
-                  {user.bonusBalance.toLocaleString('ru-RU')} бонусов
-                </Table.Td>
-              </Table.Tr>
-              <Table.Tr>
-                <Table.Td fw={500} fz={13} c="#374151">
-                  Роль в системе
-                </Table.Td>
-                <Table.Td fz={13} c="#4b5563">
-                  {user.roles.includes('ROLE_BUYER') ? 'Покупатель (BuyerProfile)' : 'Пользователь'}
-                </Table.Td>
-              </Table.Tr>
-            </Table.Tbody>
-          </Table>
-
-          <Button variant="light" color="red" fullWidth radius="sm" onClick={logout}>
-            Выйти из аккаунта
-          </Button>
-        </Paper>
-      </Container>
-    );
-  }
-
-  // Если не авторизован — форма входа
   return (
-    <Container size={420} my={30}>
-      <Title className={classes.title}>Вход в систему</Title>
-      <Text className={classes.subtitle}>
-        Токен сохраняется в памяти приложения (In-Memory closure)
-      </Text>
+    <AuthCardLayout
+      title="Вход в Т-Маркет"
+      subtitle="Войдите в личный кабинет с безопасным JWT-токеном"
+      footer={
+        <Text fz={13} c="dimmed" ta="center" mt="md">
+          Нет аккаунта?{' '}
+          <Anchor component={Link} to="/register" size="sm">
+            Зарегистрироваться
+          </Anchor>
+        </Text>
+      }
+    >
+      {nonFieldError && (
+        <Alert color="red" mb="md" radius="sm">
+          {nonFieldError}
+        </Alert>
+      )}
 
-      <Paper className={classes.card} p={24} radius="sm" withBorder>
-        {error && (
-          <Alert color="red" mb={16} radius="sm">
-            {error}
-          </Alert>
-        )}
+      <form onSubmit={handleSubmit} noValidate>
+        <Stack gap="md">
+          <TextInput
+            label="Email"
+            type="email"
+            required
+            placeholder="buyer@t-market.ru"
+            radius="sm"
+            key={form.key('email')}
+            {...form.getInputProps('email')}
+          />
 
-        <form onSubmit={handleSubmit}>
-          <Stack gap="md">
-            <TextInput
-              label="Email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.currentTarget.value)}
-              placeholder="user@t-market.ru"
-              radius="sm"
-            />
+          <PasswordInput
+            label="Пароль"
+            required
+            placeholder="Ваш пароль"
+            radius="sm"
+            key={form.key('password')}
+            {...form.getInputProps('password')}
+          />
 
-            <PasswordInput
-              label="Пароль"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.currentTarget.value)}
-              placeholder="Пароль"
-              radius="sm"
-            />
-
-            <Button type="submit" color="brandBlue" fullWidth radius="sm" mt="md" loading={loading}>
-              Войти
-            </Button>
-          </Stack>
-        </form>
-      </Paper>
-    </Container>
+          <Button
+            type="submit"
+            color="brandBlue"
+            fullWidth
+            radius="sm"
+            mt="xs"
+            loading={loginMutation.isPending}
+          >
+            Войти
+          </Button>
+        </Stack>
+      </form>
+    </AuthCardLayout>
   );
 }
 

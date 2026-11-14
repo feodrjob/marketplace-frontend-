@@ -1,18 +1,36 @@
-import { Button, Code, Paper, Stack, Table, Text, Title } from '@mantine/core';
-import { useState } from 'react';
+import { Alert, Button, Code, Paper, SimpleGrid, Stack, Text, Title } from '@mantine/core';
+import { useMutation } from '@tanstack/react-query';
+import React from 'react';
 import { useAuth } from '@/entities/user';
 import { apiClient } from '@/shared/api';
+import { getErrorMessage } from '@/shared/lib';
 import classes from './HomePage.module.css';
+
+const ENVIRONMENT_SPECS = [
+  {
+    label: 'Сетевой клиент',
+    value: 'Axios (baseURL: /api/v1, withCredentials: true)',
+  },
+  {
+    label: 'Серверное состояние',
+    value: 'TanStack Query v5 (useQuery, useMutation, фильтрованный throwOnError)',
+  },
+  {
+    label: 'Хранение токенов',
+    value:
+      'Access-токен в localStorage (ELocalKey.ACCESS_TOKEN) + Silent Refresh через HttpOnly Cookie',
+  },
+  {
+    label: 'Валидация форм',
+    value: '@mantine/form + Zod + серверные ошибки RFC 7807 (422 details)',
+  },
+] as const;
 
 export function HomePage() {
   const { user, isAuthenticated } = useAuth();
-  const [apiResponse, setApiResponse] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
-  const testAxiosRequest = async () => {
-    setLoading(true);
-    setApiResponse(null);
-    try {
+  const testRequestMutation = useMutation({
+    mutationFn: async () => {
       const start = performance.now();
       const res = await apiClient.get('/products', {
         params: {
@@ -23,29 +41,21 @@ export function HomePage() {
         },
       });
       const duration = Math.round(performance.now() - start);
-      setApiResponse(
-        `HTTP 200 OK (${duration} ms)\n\nPayload:\n${JSON.stringify(res.data, null, 2)}`
-      );
-    } catch {
-      setApiResponse(
-        'Запрос перехвачен Axios Interceptor:\n- Заголовок Authorization: Bearer <in_memory_token> прикреплён автоматически\n- Включен режим withCredentials: true (HttpOnly Cookie)\n- Бэкенд на localhost:8080 пока не запущен (сетевой слой работает корректно)'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+      return `HTTP 200 OK (${duration} ms)\n\nPayload:\n${JSON.stringify(res.data, null, 2)}`;
+    },
+  });
 
   return (
     <Stack gap={32}>
-      {/* Hero-блок со стилями из HomePage.module.css */}
+      {/* Hero-блок */}
       <Paper className={classes.heroCard} withBorder radius="sm">
         <Title order={1} className={classes.title}>
           Маркетплейс «Т-Маркет»
         </Title>
         <Text className={classes.description}>
-          Стек проекта: React 18, TypeScript, Mantine v7, Axios с безопасной авторизацией в
-          оперативной памяти (In-Memory closure), React Router v7. Архитектура построена по
-          методологии Feature-Sliced Design.
+          Стек проекта: React 18, TypeScript, Mantine v7, TanStack Query v5, Axios с
+          Bearer-авторизацией и Silent Refresh через HttpOnly Cookie, React Router v7. Архитектура
+          построена по методологии Feature-Sliced Design.
         </Text>
 
         <div className={classes.actionRow}>
@@ -53,15 +63,15 @@ export function HomePage() {
             size="sm"
             color="brandBlue"
             radius="sm"
-            onClick={testAxiosRequest}
-            loading={loading}
+            onClick={() => testRequestMutation.mutate()}
+            loading={testRequestMutation.isPending}
           >
             Отправить тестовый запрос через Axios
           </Button>
           {isAuthenticated && (
-            <Text fz={13} c="#374151">
+            <Text fz={13} c="dimmed">
               Активная сессия:{' '}
-              <Text component="span" fw={600}>
+              <Text component="span" fw={600} c="var(--mantine-color-text)">
                 {user?.name}
               </Text>
             </Text>
@@ -69,16 +79,22 @@ export function HomePage() {
         </div>
       </Paper>
 
-      {/* Терминал ответа Axios */}
-      {apiResponse && (
+      {/* Результат мутации тестового запроса */}
+      {testRequestMutation.data && (
         <Paper className={classes.terminalCard} radius="sm" withBorder>
-          <Text fz={12} fw={500} c="#4b5563" mb={8}>
+          <Text fz={12} fw={500} c="dimmed" mb={8}>
             Результат выполнения Axios-запроса:
           </Text>
           <Code block className={classes.terminalCode}>
-            {apiResponse}
+            {testRequestMutation.data}
           </Code>
         </Paper>
+      )}
+
+      {testRequestMutation.isError && (
+        <Alert color="red" radius="sm" title="Запрос завершился с ошибкой">
+          <Text fz={13}>{getErrorMessage(testRequestMutation.error)}</Text>
+        </Alert>
       )}
 
       {/* Спецификация сетевого слоя */}
@@ -86,48 +102,17 @@ export function HomePage() {
         <Title order={2} className={classes.sectionTitle}>
           Конфигурация окружения
         </Title>
-        <Paper className={classes.tableCard} withBorder radius="sm">
-          <Table verticalSpacing="sm" horizontalSpacing="md">
-            <Table.Tbody>
-              <Table.Tr>
-                <Table.Td w={240} fw={500} fz={13} c="#374151">
-                  Сетевой клиент
-                </Table.Td>
-                <Table.Td fz={13} c="#4b5563">
-                  Axios (baseURL: <code>/api/v1</code>, <code>withCredentials: true</code>)
-                </Table.Td>
-              </Table.Tr>
-
-              <Table.Tr>
-                <Table.Td fw={500} fz={13} c="#374151">
-                  Хранение токенов
-                </Table.Td>
-                <Table.Td fz={13} c="#4b5563">
-                  In-Memory (JS closure). Токен не попадает в localStorage (защита от XSS)
-                </Table.Td>
-              </Table.Tr>
-
-              <Table.Tr>
-                <Table.Td fw={500} fz={13} c="#374151">
-                  Обновление сессии
-                </Table.Td>
-                <Table.Td fz={13} c="#4b5563">
-                  Silent Refresh через HttpOnly Cookie (Path: <code>/api/v1/auth</code>) при F5 и
-                  401 перехватчике
-                </Table.Td>
-              </Table.Tr>
-
-              <Table.Tr>
-                <Table.Td fw={500} fz={13} c="#374151">
-                  Согласованный контракт
-                </Table.Td>
-                <Table.Td fz={13} c="#4b5563">
-                  <code>docs/api-contract.md</code> (фильтрация, курсорная пагинация, сущности
-                  User/Buyer/Seller)
-                </Table.Td>
-              </Table.Tr>
-            </Table.Tbody>
-          </Table>
+        <Paper p="md" withBorder radius="sm" bg="white">
+          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md" verticalSpacing="sm">
+            {ENVIRONMENT_SPECS.map((spec) => (
+              <React.Fragment key={spec.label}>
+                <Text fw={500} fz={13} c="dimmed">
+                  {spec.label}
+                </Text>
+                <Text fz={13}>{spec.value}</Text>
+              </React.Fragment>
+            ))}
+          </SimpleGrid>
         </Paper>
       </div>
     </Stack>

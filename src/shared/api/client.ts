@@ -1,32 +1,36 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import { ELocalKey, ENV } from '@/shared/config';
 
 /**
- * Хранение access-токена ИСКЛЮЧИТЕЛЬНО в оперативной памяти модуля (JS closure).
- * Токен не сохраняется в localStorage/sessionStorage, что исключает его кражу через XSS.
+ * Хранение access-токена в localStorage для мгновенного восстановления сессии при F5.
+ * Долгоживущий refresh-токен остаётся под контролем бэкенда в HttpOnly Cookie.
  */
-let inMemoryAccessToken: string | null = null;
-
 export const setAccessToken = (token: string | null): void => {
-  inMemoryAccessToken = token;
+  if (token) {
+    localStorage.setItem(ELocalKey.ACCESS_TOKEN, token);
+  } else {
+    localStorage.removeItem(ELocalKey.ACCESS_TOKEN);
+  }
 };
 
 export const getAccessToken = (): string | null => {
-  return inMemoryAccessToken;
+  return localStorage.getItem(ELocalKey.ACCESS_TOKEN);
 };
 
 // Базовый клиент Axios
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api/v1',
+  baseURL: ENV.API_URL,
   withCredentials: true, // КРИТИЧНО: автоматическая отправка HttpOnly Cookie (refresh-токен)
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Перехватчик запросов: автоматическая инъекция JWT Bearer токена из памяти
+// Перехватчик запросов: автоматическая инъекция JWT Bearer токена
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  if (inMemoryAccessToken && config.headers) {
-    config.headers.Authorization = `Bearer ${inMemoryAccessToken}`;
+  const token = getAccessToken();
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
@@ -56,7 +60,7 @@ const processQueue = (error: unknown, token: string | null = null) => {
 export const silentRefresh = async (): Promise<string | null> => {
   try {
     const response = await axios.post<{ accessToken: string }>(
-      `${import.meta.env.VITE_API_URL || '/api/v1'}/auth/refresh`,
+      `${ENV.API_URL}/auth/refresh`,
       {},
       { withCredentials: true }
     );

@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { App, AppProviders } from './app';
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 import './index.css';
 
 const rootElement = document.getElementById('root');
