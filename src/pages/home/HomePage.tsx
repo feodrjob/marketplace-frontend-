@@ -13,7 +13,7 @@ const ENVIRONMENT_SPECS = [
   },
   {
     label: 'Серверное состояние',
-    value: 'TanStack Query v5 (useQuery, useMutation, фильтрованный throwOnError)',
+    value: 'TanStack Query v5 (useQuery, useMutation, throwOnError только для 5xx)',
   },
   {
     label: 'Хранение токенов',

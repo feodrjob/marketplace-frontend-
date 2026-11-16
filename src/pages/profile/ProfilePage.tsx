@@ -24,7 +24,9 @@ export function ProfilePage() {
 
   const handleLogout = () => {
     logoutMutation.mutate(undefined, {
-      onSuccess: () => {
+      // Уходим на логин независимо от ответа сервера:
+      // локальная сессия уже сброшена в onSettled мутации.
+      onSettled: () => {
         navigate('/login', { replace: true });
       },
     });
