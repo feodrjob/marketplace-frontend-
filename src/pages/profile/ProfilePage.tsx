@@ -11,7 +11,6 @@ import {
 } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, useLogoutMutation } from '@/entities/user';
-import { Formatter } from '@/shared/lib';
 
 export function ProfilePage() {
   const { user } = useAuth();
@@ -21,6 +20,9 @@ export function ProfilePage() {
   if (!user) {
     return null;
   }
+
+  const roleLabel =
+    user.role === 'SELLER' ? 'Продавец' : user.role === 'ADMIN' ? 'Администратор' : 'Покупатель';
 
   const handleLogout = () => {
     logoutMutation.mutate(undefined, {
@@ -44,10 +46,10 @@ export function ProfilePage() {
       <Paper p={24} radius="sm" withBorder mt={20} bg="white">
         <Group justify="space-between" mb="md">
           <Text fw={600} fz={15}>
-            Профиль покупателя
+            Профиль
           </Text>
           <Badge color="brandBlue" variant="light" size="sm">
-            Покупатель
+            {roleLabel}
           </Badge>
         </Group>
 
@@ -58,7 +60,7 @@ export function ProfilePage() {
             Имя
           </Text>
           <Text fz={13} fw={600}>
-            {user.name}
+            {user.fullName ?? '—'}
           </Text>
 
           <Text fz={13} fw={500} c="dimmed">
@@ -76,18 +78,45 @@ export function ProfilePage() {
           )}
 
           <Text fz={13} fw={500} c="dimmed">
-            Бонусный баланс
+            Роль
           </Text>
-          <Text fz={13} c="brandBlue.6" fw={600} style={{ fontVariantNumeric: 'tabular-nums' }}>
-            {Formatter.bonus(user.bonusBalance)}
-          </Text>
+          <Text fz={13}>{roleLabel}</Text>
 
-          <Text fz={13} fw={500} c="dimmed">
-            ID покупателя
-          </Text>
-          <Text fz={12} c="dimmed" ff="monospace">
-            {user.buyerId}
-          </Text>
+          {user.role === 'SELLER' && user.companyName && (
+            <>
+              <Text fz={13} fw={500} c="dimmed">
+                Компания
+              </Text>
+              <Text fz={13}>{user.companyName}</Text>
+            </>
+          )}
+
+          {user.role === 'SELLER' && user.inn && (
+            <>
+              <Text fz={13} fw={500} c="dimmed">
+                ИНН
+              </Text>
+              <Text fz={13}>{user.inn}</Text>
+            </>
+          )}
+
+          {user.role === 'SELLER' && user.description && (
+            <>
+              <Text fz={13} fw={500} c="dimmed">
+                Описание
+              </Text>
+              <Text fz={13}>{user.description}</Text>
+            </>
+          )}
+
+          {user.role === 'ADMIN' && user.department && (
+            <>
+              <Text fz={13} fw={500} c="dimmed">
+                Отдел
+              </Text>
+              <Text fz={13}>{user.department}</Text>
+            </>
+          )}
         </SimpleGrid>
 
         <Button

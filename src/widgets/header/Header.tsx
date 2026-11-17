@@ -1,7 +1,6 @@
 import { Box, Button, Container, Group, Skeleton, Text } from '@mantine/core';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/entities/user';
-import { Formatter } from '@/shared/lib';
 import classes from './Header.module.css';
 
 const navLinks = [
@@ -47,9 +46,8 @@ export function Header() {
             <Group gap={6} align="center" wrap="nowrap">
               <Link to="/profile" className={classes.userLink} title="Перейти в профиль">
                 <Text fz={13} fw={500} style={{ whiteSpace: 'nowrap' }}>
-                  {user.name}
+                  {user.fullName ?? user.email}
                 </Text>
-                <Text className={classes.bonusText}>{Formatter.bonus(user.bonusBalance)}</Text>
               </Link>
             </Group>
           ) : (

@@ -72,7 +72,7 @@ export function HomePage() {
             <Text fz={13} c="dimmed">
               Активная сессия:{' '}
               <Text component="span" fw={600} c="var(--mantine-color-text)">
-                {user?.name}
+                {user?.fullName ?? user?.email}
               </Text>
             </Text>
           )}

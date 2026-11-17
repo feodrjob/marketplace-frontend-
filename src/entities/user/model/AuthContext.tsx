@@ -8,16 +8,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { data: user = null, isLoading, isFetching } = useCurrentUserQuery();
 
   const value = useMemo<AuthContextType>(() => {
-    const roles = user?.roles ?? [];
+    const role = user?.role;
 
     return {
       user,
       isAuthenticated: Boolean(user),
       isLoading,
       isFetching,
-      isBuyer: roles.includes('ROLE_BUYER'),
-      isSeller: roles.includes('ROLE_SELLER'),
-      isAdmin: roles.includes('ROLE_ADMIN'),
+      isBuyer: role === 'BUYER',
+      isSeller: role === 'SELLER',
+      isAdmin: role === 'ADMIN',
     };
   }, [user, isLoading, isFetching]);
 

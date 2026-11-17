@@ -26,7 +26,7 @@ export const authApi = {
       const { authMocks } = await import('./authMocks');
       return authMocks.getProfile();
     }
-    const res = await apiClient.get<User>('/user/profile');
+    const res = await apiClient.get<User>('/users/me');
     return res.data;
   },
 
