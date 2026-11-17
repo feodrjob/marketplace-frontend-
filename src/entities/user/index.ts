@@ -8,6 +8,7 @@ export type {
   LoginCredentials,
   RegisterBuyerData,
   User,
+  UserProfile,
   UserRole,
 } from './model/types';
 export {

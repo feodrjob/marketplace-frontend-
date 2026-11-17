@@ -1,23 +1,31 @@
-import type { AuthResponse, LoginCredentials, RegisterBuyerData, User } from '../model/types';
+import type {
+  AuthResponse,
+  LoginCredentials,
+  RegisterBuyerData,
+  UserProfile,
+} from '../model/types';
 
-let mockCurrentUser: User | null = {
+const now = () => new Date().toISOString();
+
+let mockCurrentUser: UserProfile | null = {
   id: '1',
   email: 'buyer@t-market.ru',
-  name: 'Иван Покупатель',
-  roles: ['ROLE_BUYER'],
-  buyerId: 'buyer-uuid-1',
-  bonusBalance: 15000,
+  role: 'BUYER',
+  fullName: 'Иван Покупатель',
+  phone: '+79990000000',
+  createdAt: now(),
+  updatedAt: now(),
 };
 
 export const authMocks = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const user: User = {
+    const user: UserProfile = {
       id: '1',
       email: credentials.email,
-      name: credentials.email.split('@')[0] || 'Пользователь',
-      roles: ['ROLE_BUYER'],
-      buyerId: 'buyer-uuid-1',
-      bonusBalance: 15000,
+      role: 'BUYER',
+      fullName: credentials.email.split('@')[0] || 'Покупатель',
+      createdAt: now(),
+      updatedAt: now(),
     };
     mockCurrentUser = user;
     return {
@@ -27,14 +35,14 @@ export const authMocks = {
   },
 
   registerBuyer: async (data: RegisterBuyerData): Promise<AuthResponse> => {
-    const user: User = {
+    const user: UserProfile = {
       id: `buyer-${Date.now()}`,
       email: data.email,
-      name: data.fullName,
-      roles: ['ROLE_BUYER'],
-      buyerId: `buyer-uuid-${Date.now()}`,
+      role: 'BUYER',
+      fullName: data.fullName ?? data.email,
       phone: data.phone,
-      bonusBalance: 500,
+      createdAt: now(),
+      updatedAt: now(),
     };
     mockCurrentUser = user;
     return {
@@ -43,7 +51,7 @@ export const authMocks = {
     };
   },
 
-  getProfile: async (): Promise<User> => {
+  getProfile: async (): Promise<UserProfile> => {
     if (!mockCurrentUser) {
       throw new Error('Mock user session not initialized');
     }

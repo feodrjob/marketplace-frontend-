@@ -1,11 +1,11 @@
 import { apiClient } from '@/shared/api';
 import { ENV } from '@/shared/config';
 import type { ProductFilters, ProductItem, ProductListResponse } from '../model/types';
-import { getMockProducts } from './productMocks';
 
 export const productApi = {
   list: async (filters: ProductFilters): Promise<ProductItem[]> => {
     if (ENV.USE_MOCKS) {
+      const { getMockProducts } = await import('./productMocks');
       return getMockProducts(filters);
     }
 
@@ -17,14 +17,20 @@ export const productApi = {
       params['f[category]'] = filters.category;
     }
 
-    if (filters.priceRange.trim()) {
-      params['f[price]'] = filters.priceRange.trim();
+    const priceRange = typeof filters.priceRange === 'string' ? filters.priceRange.trim() : '';
+    if (priceRange) {
+      params['f[price]'] = priceRange;
     }
 
     const res = await apiClient.get<ProductListResponse | ProductItem[]>('/products', {
       params,
     });
 
-    return Array.isArray(res.data) ? res.data : res.data.items;
+    const items = Array.isArray(res.data) ? res.data : res.data?.items;
+    if (!Array.isArray(items)) {
+      throw new Error('Некорректный ответ API: ожидался список товаров');
+    }
+
+    return items;
   },
 };

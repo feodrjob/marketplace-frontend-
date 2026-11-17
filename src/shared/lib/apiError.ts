@@ -10,6 +10,15 @@ export interface ProblemDetails {
   timestamp?: string;
 }
 
+function isStringRecord(value: unknown): value is Record<string, string> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value) &&
+    Object.values(value).every((item) => typeof item === 'string')
+  );
+}
+
 export function getValidationErrors(error: unknown): Record<string, string> | null {
   if (!axios.isAxiosError<ProblemDetails>(error)) {
     return null;
@@ -18,7 +27,7 @@ export function getValidationErrors(error: unknown): Record<string, string> | nu
   const status = error.response?.status;
   const details = error.response?.data?.details;
 
-  if (status === 422 && details && typeof details === 'object' && !Array.isArray(details)) {
+  if (status === 422 && isStringRecord(details)) {
     return details;
   }
 
@@ -31,10 +40,10 @@ export function getErrorMessage(
 ): string {
   if (axios.isAxiosError<ProblemDetails>(error)) {
     const data = error.response?.data;
-    if (data?.detail) {
+    if (typeof data?.detail === 'string' && data.detail.trim()) {
       return data.detail;
     }
-    if (data?.title) {
+    if (typeof data?.title === 'string' && data.title.trim()) {
       return data.title;
     }
     if (!error.response) {

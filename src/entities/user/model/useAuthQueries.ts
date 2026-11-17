@@ -1,7 +1,7 @@
 import { notifications } from '@mantine/notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { getAccessToken, setAccessToken, silentRefresh } from '@/shared/api';
+import { getAccessToken, refreshAccessToken, setAccessToken } from '@/shared/api';
 import { ENV } from '@/shared/config';
 import { getErrorMessage, getValidationErrors } from '@/shared/lib';
 import { authApi } from '../api/authApi';
@@ -22,7 +22,7 @@ export function useCurrentUserQuery() {
 
       let token = getAccessToken();
       if (!token) {
-        token = await silentRefresh();
+        token = await refreshAccessToken();
       }
       if (!token) {
         return null;
@@ -95,9 +95,14 @@ export function useLogoutMutation() {
 
   return useMutation<void, unknown, void>({
     mutationFn: authApi.logout,
-    onSuccess: () => {
+    // Локальная сессия сбрасывается в любом случае: если сервер не ответил,
+    // пользователь не должен остаться в интерфейсе с валидным access-токеном.
+    onSettled: () => {
       setAccessToken(null);
       queryClient.setQueryData(AUTH_QUERY_KEYS.profile, null);
+      queryClient.removeQueries({
+        predicate: (query) => query.queryKey[0] !== 'user',
+      });
     },
     onError: (error) => {
       notifications.show({
