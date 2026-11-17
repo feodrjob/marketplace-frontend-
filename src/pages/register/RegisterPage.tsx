@@ -11,11 +11,8 @@ import {
 import { useForm } from '@mantine/form';
 import { zodResolver } from 'mantine-form-zod-resolver';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  type RegisterBuyerFormValues,
-  registerBuyerSchema,
-  useRegisterBuyerMutation,
-} from '@/entities/user';
+import { type RegisterBuyerFormValues, registerBuyerSchema } from '@/entities/user';
+import { useRegisterBuyerMutation } from '@/features/auth-by-email';
 import { getErrorMessage, getValidationErrors } from '@/shared/lib';
 import { AuthCardLayout } from '@/shared/ui';
 

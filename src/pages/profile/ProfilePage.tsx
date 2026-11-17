@@ -10,7 +10,8 @@ import {
   Title,
 } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
-import { useAuth, useLogoutMutation } from '@/entities/user';
+import { useAuth } from '@/entities/user';
+import { useLogoutMutation } from '@/features/auth-by-email';
 
 export function ProfilePage() {
   const { user } = useAuth();
