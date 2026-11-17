@@ -1,6 +1,5 @@
 import {
   Button,
-  Card,
   Paper,
   Select,
   SimpleGrid,
@@ -11,31 +10,100 @@ import {
   Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useDebouncedValue } from '@mantine/hooks';
-import { type ProductFilters, useProductsQuery } from '@/entities/product';
-import { Formatter } from '@/shared/lib';
+import { useDebouncedValue, useIntersection } from '@mantine/hooks';
+import { useEffect, useMemo } from 'react';
+import {
+  type Product,
+  ProductCard,
+  type ProductFilters,
+  useProductsQuery,
+} from '@/entities/product';
+import { getErrorMessage } from '@/shared/lib';
 import classes from './CatalogPage.module.css';
 
-const SKELETON_KEYS = ['skeleton-1', 'skeleton-2', 'skeleton-3', 'skeleton-4'] as const;
+const SKELETON_KEYS = [
+  'skeleton-1',
+  'skeleton-2',
+  'skeleton-3',
+  'skeleton-4',
+  'skeleton-5',
+  'skeleton-6',
+  'skeleton-7',
+  'skeleton-8',
+] as const;
+
+const INITIAL_FILTERS: ProductFilters = {
+  category: 'all',
+  priceRange: '',
+  sort: 'price,asc',
+};
+
+const CATEGORY_OPTIONS = [
+  { value: 'all', label: 'Все категории' },
+  { value: 'electronics', label: 'Электроника' },
+  { value: 'clothes', label: 'Одежда' },
+  { value: 'home', label: 'Дом' },
+];
+
+const SORT_OPTIONS = [
+  { value: 'price,asc', label: 'Сначала дешевле' },
+  { value: 'price,desc', label: 'Сначала дороже' },
+];
 
 export function CatalogPage() {
   const form = useForm<ProductFilters>({
-    initialValues: {
-      category: 'electronics',
-      priceRange: '1000,25000',
-      sort: 'price,asc',
-    },
+    initialValues: INITIAL_FILTERS,
   });
 
   const [debouncedPriceRange] = useDebouncedValue(form.values.priceRange, 300);
 
-  const { data, isLoading } = useProductsQuery({
+  const filters: ProductFilters = {
     category: form.values.category,
     priceRange: debouncedPriceRange,
     sort: form.values.sort,
-  });
+  };
 
-  const products = data?.pages.flatMap((page) => page.items) ?? [];
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useProductsQuery(filters);
+
+  const { ref: loadMoreRef, entry } = useIntersection({ rootMargin: '300px' });
+
+  const products = useMemo(() => {
+    const seen = new Set<string>();
+    const result: Product[] = [];
+
+    for (const page of data?.pages ?? []) {
+      for (const item of page.items) {
+        if (!seen.has(item.id)) {
+          seen.add(item.id);
+          result.push(item);
+        }
+      }
+    }
+
+    return result;
+  }, [data]);
+
+  const total = data?.pages[0]?.total ?? 0;
+
+  useEffect(() => {
+    if (!entry?.isIntersecting || !hasNextPage || isFetchingNextPage) {
+      return;
+    }
+    void fetchNextPage();
+  }, [entry?.isIntersecting, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const resetFilters = () => {
+    form.setValues(INITIAL_FILTERS);
+  };
 
   return (
     <Stack gap={24}>
@@ -43,72 +111,90 @@ export function CatalogPage() {
         <Title order={1} className={classes.title}>
           Каталог товаров
         </Title>
-        <Text className={classes.subtitle}>
-          Интеграция фильтрации и TanStack Query по контракту (GET /api/v1/products)
-        </Text>
+        <Text className={classes.subtitle}>Товары продавцов маркетплейса</Text>
       </div>
 
-      {/* Панель фильтров на базе @mantine/form */}
       <Paper className={classes.filtersCard} radius="sm" withBorder p="md">
         <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
           <Select
-            label="Категория (f[category])"
+            label="Категория"
             size="sm"
             allowDeselect={false}
-            data={[
-              { value: 'all', label: 'Все категории' },
-              { value: 'electronics', label: 'Электроника (electronics)' },
-              { value: 'clothes', label: 'Одежда (clothes)' },
-            ]}
+            data={CATEGORY_OPTIONS}
             {...form.getInputProps('category')}
           />
 
           <TextInput
-            label="Диапазон цен (f[price])"
+            label="Цена, бонусы"
+            description="Диапазон от и до, например 1000,25000"
             size="sm"
             placeholder="1000,25000"
             {...form.getInputProps('priceRange')}
           />
 
           <Select
-            label="Сортировка (sort)"
+            label="Сортировка"
             size="sm"
             allowDeselect={false}
-            data={[
-              { value: 'price,asc', label: 'Сначала дешевле (price,asc)' },
-              { value: 'price,desc', label: 'Сначала дороже (price,desc)' },
-            ]}
+            data={SORT_OPTIONS}
             {...form.getInputProps('sort')}
           />
         </SimpleGrid>
       </Paper>
 
-      {/* Карточки товаров */}
       {isLoading ? (
-        <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing={16}>
+        <SimpleGrid cols={{ base: 2, sm: 3, md: 4 }} spacing={16}>
           {SKELETON_KEYS.map((key) => (
-            <Skeleton key={key} height={156} radius="sm" />
+            <Skeleton key={key} height={240} radius="sm" />
           ))}
         </SimpleGrid>
+      ) : isError ? (
+        <Paper p="lg" radius="sm" withBorder ta="center">
+          <Stack gap="sm" align="center">
+            <Text fz={14} c="dimmed">
+              {getErrorMessage(error, 'Не удалось загрузить каталог')}
+            </Text>
+            <Button variant="default" size="sm" onClick={() => void refetch()}>
+              Повторить
+            </Button>
+          </Stack>
+        </Paper>
       ) : products.length === 0 ? (
-        <Paper p="lg" radius="sm" withBorder bg="white" ta="center">
-          <Text fz={14} c="dimmed">
-            Товары по выбранным параметрам не найдены.
-          </Text>
+        <Paper p="lg" radius="sm" withBorder ta="center">
+          <Stack gap="sm" align="center">
+            <Text fz={14} c="dimmed">
+              По выбранным фильтрам товаров нет.
+            </Text>
+            <Button variant="default" size="sm" onClick={resetFilters}>
+              Сбросить фильтры
+            </Button>
+          </Stack>
         </Paper>
       ) : (
-        <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing={16}>
-          {products.map((prod) => (
-            <Card key={prod.id} padding="md" radius="sm" withBorder className={classes.productCard}>
-              <Text className={classes.category}>{prod.category}</Text>
-              <Text className={classes.productTitle}>{prod.title}</Text>
-              <Text className={classes.price}>{Formatter.price(prod.price)}</Text>
-              <Button color="brandBlue" fullWidth radius="sm" size="xs">
-                В корзину
+        <>
+          <SimpleGrid cols={{ base: 2, sm: 3, md: 4 }} spacing={16}>
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </SimpleGrid>
+
+          {hasNextPage ? (
+            <>
+              <div ref={loadMoreRef} style={{ height: 1 }} />
+              <Button
+                variant="default"
+                onClick={() => void fetchNextPage()}
+                loading={isFetchingNextPage}
+              >
+                Показать ещё
               </Button>
-            </Card>
-          ))}
-        </SimpleGrid>
+            </>
+          ) : (
+            <Text ta="center" c="dimmed" fz="sm">
+              Показано {products.length} из {total}
+            </Text>
+          )}
+        </>
       )}
     </Stack>
   );

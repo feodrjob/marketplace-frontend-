@@ -11,3 +11,4 @@ export type {
 export { useCreateProductMutation } from './model/useCreateProductMutation';
 export { useProductQuery } from './model/useProductQuery';
 export { PRODUCT_QUERY_KEYS, useProductsQuery } from './model/useProductsQuery';
+export { ProductCard } from './ui/ProductCard';
