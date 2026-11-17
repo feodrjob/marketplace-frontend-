@@ -2,7 +2,8 @@ import { Alert, Anchor, Button, PasswordInput, Stack, Text, TextInput } from '@m
 import { useForm } from '@mantine/form';
 import { zodResolver } from 'mantine-form-zod-resolver';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { type LoginFormValues, loginSchema, useLoginMutation } from '@/entities/user';
+import { type LoginFormValues, loginSchema } from '@/entities/user';
+import { useLoginMutation } from '@/features/auth-by-email';
 import { getErrorMessage, getValidationErrors } from '@/shared/lib';
 import { AuthCardLayout } from '@/shared/ui';
 

@@ -11,10 +11,4 @@ export type {
   UserProfile,
   UserRole,
 } from './model/types';
-export {
-  AUTH_QUERY_KEYS,
-  useCurrentUserQuery,
-  useLoginMutation,
-  useLogoutMutation,
-  useRegisterBuyerMutation,
-} from './model/useAuthQueries';
+export { AUTH_QUERY_KEYS, useCurrentUserQuery } from './model/useAuthQueries';
