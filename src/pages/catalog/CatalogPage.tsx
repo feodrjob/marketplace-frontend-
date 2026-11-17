@@ -29,11 +29,13 @@ export function CatalogPage() {
 
   const [debouncedPriceRange] = useDebouncedValue(form.values.priceRange, 300);
 
-  const { data: products = [], isLoading } = useProductsQuery({
+  const { data, isLoading } = useProductsQuery({
     category: form.values.category,
     priceRange: debouncedPriceRange,
     sort: form.values.sort,
   });
+
+  const products = data?.pages.flatMap((page) => page.items) ?? [];
 
   return (
     <Stack gap={24}>
