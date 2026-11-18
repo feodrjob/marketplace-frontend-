@@ -1,6 +1,11 @@
 import { notifications } from '@mantine/notifications';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { AuthResponse, LoginCredentials, RegisterBuyerData } from '@/entities/user';
+import type {
+  AuthResponse,
+  LoginCredentials,
+  RegisterBuyerData,
+  RegisterSellerData,
+} from '@/entities/user';
 import { AUTH_QUERY_KEYS, authApi } from '@/entities/user';
 import { setAccessToken } from '@/shared/api';
 import { getErrorMessage, getValidationErrors } from '@/shared/lib';
@@ -44,6 +49,28 @@ export function useRegisterBuyerMutation() {
         color: 'red',
         title: 'Ошибка регистрации',
         message: getErrorMessage(error, 'Не удалось завершить регистрацию'),
+      });
+    },
+  });
+}
+
+export function useRegisterSellerMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation<AuthResponse, unknown, RegisterSellerData>({
+    mutationFn: authApi.registerSeller,
+    onSuccess: (data) => {
+      setAccessToken(data.accessToken);
+      queryClient.setQueryData(AUTH_QUERY_KEYS.profile, data.user);
+    },
+    onError: (error) => {
+      if (getValidationErrors(error)) {
+        return;
+      }
+      notifications.show({
+        color: 'red',
+        title: 'Ошибка регистрации продавца',
+        message: getErrorMessage(error, 'Не удалось создать профиль продавца'),
       });
     },
   });

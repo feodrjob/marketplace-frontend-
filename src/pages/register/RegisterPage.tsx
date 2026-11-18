@@ -73,9 +73,14 @@ export function RegisterPage() {
         </Text>
       }
       belowCard={
-        <Text fz={12} c="dimmed" ta="center" mt="md">
-          Хотите продавать товары? Кабинет продавца настраивается отдельно.
-        </Text>
+        <Stack gap={8} mt="md">
+          <Text fz={12} c="dimmed" ta="center">
+            Хотите продавать товары?
+          </Text>
+          <Button component={Link} to="/register/seller" variant="default" radius="sm" h={44}>
+            Зарегистрироваться как продавец
+          </Button>
+        </Stack>
       }
     >
       {nonFieldError && (

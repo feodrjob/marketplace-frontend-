@@ -57,12 +57,16 @@ export function ProfilePage() {
         <Divider mb="md" />
 
         <SimpleGrid cols={{ base: 1, xs: 2 }} spacing="xs" verticalSpacing="sm" mb="lg">
-          <Text fz={13} fw={500} c="dimmed">
-            Имя
-          </Text>
-          <Text fz={13} fw={600}>
-            {user.fullName ?? '—'}
-          </Text>
+          {user.fullName && (
+            <>
+              <Text fz={13} fw={500} c="dimmed">
+                Имя
+              </Text>
+              <Text fz={13} fw={600}>
+                {user.fullName}
+              </Text>
+            </>
+          )}
 
           <Text fz={13} fw={500} c="dimmed">
             Email

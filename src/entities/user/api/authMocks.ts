@@ -2,6 +2,7 @@ import type {
   AuthResponse,
   LoginCredentials,
   RegisterBuyerData,
+  RegisterSellerData,
   UserProfile,
 } from '../model/types';
 
@@ -45,6 +46,24 @@ export const authMocks = {
       role: 'BUYER',
       fullName: data.fullName ?? data.email,
       phone: data.phone,
+      createdAt: now(),
+      updatedAt: now(),
+    };
+    mockCurrentUser = user;
+    return {
+      accessToken: `mock_jwt_token_${Date.now()}`,
+      user,
+    };
+  },
+
+  registerSeller: async (data: RegisterSellerData): Promise<AuthResponse> => {
+    const user: UserProfile = {
+      id: `seller-${Date.now()}`,
+      email: data.email,
+      role: 'SELLER',
+      companyName: data.companyName,
+      inn: data.inn,
+      description: data.description,
       createdAt: now(),
       updatedAt: now(),
     };

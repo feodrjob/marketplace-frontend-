@@ -11,6 +11,7 @@ const CatalogPage = lazy(() => import('@/pages/catalog'));
 const ProductDetailPage = lazy(() => import('@/pages/product-detail'));
 const LoginPage = lazy(() => import('@/pages/login'));
 const RegisterPage = lazy(() => import('@/pages/register'));
+const RegisterSellerPage = lazy(() => import('@/pages/register-seller'));
 const ProfilePage = lazy(() => import('@/pages/profile'));
 const SellerProductCreatePage = lazy(() => import('@/pages/seller-product-create'));
 const NotFoundPage = lazy(() => import('@/pages/not-found'));
@@ -36,6 +37,7 @@ export function AppRouter() {
           <Route element={<GuestRoute />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/register/seller" element={<RegisterSellerPage />} />
           </Route>
 
           <Route element={<ProtectedRoute />}>
