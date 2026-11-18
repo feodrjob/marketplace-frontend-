@@ -39,13 +39,20 @@ export function getErrorMessage(
   fallback = 'Произошла ошибка. Попробуйте повторить позже.'
 ): string {
   if (axios.isAxiosError<ProblemDetails>(error)) {
+    const status = error.response?.status;
     const data = error.response?.data;
-    if (typeof data?.detail === 'string' && data.detail.trim()) {
-      return data.detail;
+
+    // Текст от бэкенда показываем только для клиентских ошибок (4xx).
+    // Для 5xx detail может содержать внутренние детали, поэтому — только fallback.
+    if (status === undefined || status < 500) {
+      if (typeof data?.detail === 'string' && data.detail.trim()) {
+        return data.detail;
+      }
+      if (typeof data?.title === 'string' && data.title.trim()) {
+        return data.title;
+      }
     }
-    if (typeof data?.title === 'string' && data.title.trim()) {
-      return data.title;
-    }
+
     if (!error.response) {
       return 'Сервер недоступен. Проверьте подключение или настройки API.';
     }

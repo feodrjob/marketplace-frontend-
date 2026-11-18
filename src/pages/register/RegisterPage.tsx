@@ -9,7 +9,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { zodResolver } from 'mantine-form-zod-resolver';
+import { zod4Resolver } from 'mantine-form-zod-resolver';
 import { Link, useNavigate } from 'react-router-dom';
 import { type RegisterBuyerFormValues, registerBuyerSchema } from '@/entities/user';
 import { useRegisterBuyerMutation } from '@/features/auth-by-email';
@@ -30,7 +30,7 @@ export function RegisterPage() {
       confirmPassword: '',
       termsAccepted: false,
     },
-    validate: zodResolver(registerBuyerSchema),
+    validate: zod4Resolver(registerBuyerSchema),
   });
 
   const handleSubmit = form.onSubmit((values) => {
@@ -88,6 +88,7 @@ export function RegisterPage() {
         <Stack gap="sm">
           <TextInput
             label="Имя и Фамилия"
+            autoComplete="name"
             required
             placeholder="Иван Иванов"
             radius="sm"
@@ -98,6 +99,7 @@ export function RegisterPage() {
           <TextInput
             label="Email"
             type="email"
+            autoComplete="email"
             required
             placeholder="buyer@t-market.ru"
             radius="sm"
@@ -108,6 +110,7 @@ export function RegisterPage() {
           <TextInput
             label="Телефон"
             type="tel"
+            autoComplete="tel"
             placeholder="+7 (999) 000-00-00"
             radius="sm"
             key={form.key('phone')}
@@ -116,6 +119,7 @@ export function RegisterPage() {
 
           <PasswordInput
             label="Пароль"
+            autoComplete="new-password"
             required
             placeholder="Не менее 8 символов"
             radius="sm"
@@ -125,6 +129,7 @@ export function RegisterPage() {
 
           <PasswordInput
             label="Повторите пароль"
+            autoComplete="new-password"
             required
             placeholder="Повтор пароля"
             radius="sm"

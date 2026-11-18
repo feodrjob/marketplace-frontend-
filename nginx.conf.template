@@ -33,10 +33,20 @@ server {
         image/svg+xml;
     gzip_disable "MSIE [1-6]\.";
 
-    # Security headers
+    # Не раскрываем версию nginx в ответах и на страницах ошибок
+    server_tokens off;
+
+    # Security headers.
+    # ВАЖНО: nginx не наследует add_header в location, если у location есть
+    # собственные add_header. Поэтому в /assets/ и / эти строки повторяются.
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-Frame-Options "SAMEORIGIN" always;
-    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+    # Mantine выставляет CSS-переменные инлайн-стилями, поэтому 'unsafe-inline'
+    # нужен только для стилей. Скрипты остаются строго same-origin.
+    # img-src с https: — задел под будущие фото товаров с медиасервиса.
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
 
     # API Gateway: фронтенд ходит на относительный /api/v1,
     # nginx проксирует запросы на бэкенд. Адрес берётся из env при старте,
@@ -61,12 +71,21 @@ server {
     location /assets/ {
         expires 1y;
         add_header Cache-Control "public, max-age=31536000, immutable";
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
     }
 
     # SPA routing: fallback all routes to index.html
     location / {
         try_files $uri $uri/ /index.html;
         add_header Cache-Control "no-cache, no-store, must-revalidate";
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+        add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
     }
 
     # Error handling

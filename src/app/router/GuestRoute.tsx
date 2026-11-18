@@ -1,6 +1,7 @@
 import { Center, Loader } from '@mantine/core';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/entities/user';
+import { getSafeRedirect } from '@/shared/lib';
 
 interface LocationState {
   from?: {
@@ -22,7 +23,8 @@ export function GuestRoute() {
 
   if (isAuthenticated) {
     const from = (location.state as LocationState | null)?.from?.pathname;
-    const redirectTo = from && from !== '/login' && from !== '/register' ? from : '/profile';
+    const redirectTo =
+      from === '/login' || from === '/register' ? '/profile' : getSafeRedirect(from, '/profile');
     return <Navigate to={redirectTo} replace />;
   }
 

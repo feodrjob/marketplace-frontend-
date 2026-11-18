@@ -1,10 +1,10 @@
 import { Alert, Anchor, Button, PasswordInput, Stack, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { zodResolver } from 'mantine-form-zod-resolver';
+import { zod4Resolver } from 'mantine-form-zod-resolver';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { type LoginFormValues, loginSchema } from '@/entities/user';
 import { useLoginMutation } from '@/features/auth-by-email';
-import { getErrorMessage, getValidationErrors } from '@/shared/lib';
+import { getErrorMessage, getSafeRedirect, getValidationErrors } from '@/shared/lib';
 import { AuthCardLayout } from '@/shared/ui';
 
 interface LocationState {
@@ -18,7 +18,10 @@ export function LoginPage() {
   const location = useLocation();
   const loginMutation = useLoginMutation();
 
-  const from = (location.state as LocationState | null)?.from?.pathname || '/profile';
+  const from = getSafeRedirect(
+    (location.state as LocationState | null)?.from?.pathname,
+    '/profile'
+  );
 
   const form = useForm<LoginFormValues>({
     mode: 'uncontrolled',
@@ -26,7 +29,7 @@ export function LoginPage() {
       email: '',
       password: '',
     },
-    validate: zodResolver(loginSchema),
+    validate: zod4Resolver(loginSchema),
   });
 
   const handleSubmit = form.onSubmit((values) => {
@@ -72,6 +75,7 @@ export function LoginPage() {
           <TextInput
             label="Email"
             type="email"
+            autoComplete="email"
             required
             placeholder="buyer@t-market.ru"
             radius="sm"
@@ -81,6 +85,7 @@ export function LoginPage() {
 
           <PasswordInput
             label="Пароль"
+            autoComplete="current-password"
             required
             placeholder="Ваш пароль"
             radius="sm"
