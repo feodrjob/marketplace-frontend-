@@ -124,7 +124,7 @@ export function CatalogPage() {
           />
 
           <TextInput
-            label="Цена, бонусы"
+            label="Цена, ₽"
             description="Диапазон от и до, например 1000,25000"
             size="sm"
             placeholder="1000,25000"

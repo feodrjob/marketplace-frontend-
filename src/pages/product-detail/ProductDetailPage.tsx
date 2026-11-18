@@ -77,7 +77,7 @@ export function ProductDetailPage() {
           <Title order={1} className={classes.title}>
             {product.title}
           </Title>
-          <Text className={classes.price}>{Formatter.bonus(product.price)}</Text>
+          <Text className={classes.price}>{Formatter.price(product.price)}</Text>
 
           <Divider my="md" />
 

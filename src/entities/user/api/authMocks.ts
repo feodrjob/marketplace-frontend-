@@ -19,11 +19,15 @@ let mockCurrentUser: UserProfile | null = {
 
 export const authMocks = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
+    // Тестовый профиль продавца для локальной разработки:
+    // любой email, начинающийся с seller, получает роль SELLER.
+    const isSeller = credentials.email.trim().toLowerCase().startsWith('seller');
     const user: UserProfile = {
-      id: '1',
+      id: isSeller ? 'seller-1' : '1',
       email: credentials.email,
-      role: 'BUYER',
+      role: isSeller ? 'SELLER' : 'BUYER',
       fullName: credentials.email.split('@')[0] || 'Покупатель',
+      ...(isSeller ? { companyName: 'Мой магазин' } : {}),
       createdAt: now(),
       updatedAt: now(),
     };

@@ -39,7 +39,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <Text className={classes.seller} lineClamp={1}>
         {sellerName}
       </Text>
-      <Text className={classes.price}>{Formatter.bonus(product.price)}</Text>
+      <Text className={classes.price}>{Formatter.price(product.price)}</Text>
     </Card>
   );
 }

@@ -9,7 +9,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/entities/user';
 import { useLogoutMutation } from '@/features/auth-by-email';
 
@@ -41,7 +41,7 @@ export function ProfilePage() {
         Личный кабинет
       </Title>
       <Text fz={13} c="dimmed" ta="center" mt={4}>
-        Авторизованная сессия (JWT + Silent Refresh через HttpOnly Cookie)
+        Данные вашего аккаунта
       </Text>
 
       <Paper p={24} radius="sm" withBorder mt={20} bg="white">
@@ -119,6 +119,20 @@ export function ProfilePage() {
             </>
           )}
         </SimpleGrid>
+
+        {user.role === 'SELLER' && (
+          <Button
+            component={Link}
+            to="/seller/products/new"
+            color="brandBlue"
+            fullWidth
+            radius="sm"
+            h={44}
+            mb="sm"
+          >
+            Добавить товар
+          </Button>
+        )}
 
         <Button
           variant="light"
