@@ -1,4 +1,8 @@
 export { productApi } from './api/productApi';
+export {
+  getProductCategoryLabel,
+  PRODUCT_CATEGORY_LABELS,
+} from './model/categories';
 export type {
   CreateProductData,
   Product,

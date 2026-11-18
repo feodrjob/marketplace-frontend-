@@ -9,5 +9,8 @@ export function useProductQuery(id: string | undefined) {
     queryFn: ({ signal }) => productApi.detail(id as string, signal),
     enabled: Boolean(id),
     retry: false,
+    // Страница товара показывает ошибку сама (404, нет сети, 5xx),
+    // чтобы не подменять весь экран общим ErrorBoundary.
+    throwOnError: false,
   });
 }

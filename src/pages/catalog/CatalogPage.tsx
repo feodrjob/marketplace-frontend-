@@ -13,6 +13,7 @@ import { useForm } from '@mantine/form';
 import { useDebouncedValue, useIntersection } from '@mantine/hooks';
 import { useEffect, useMemo } from 'react';
 import {
+  PRODUCT_CATEGORY_LABELS,
   type Product,
   ProductCard,
   type ProductFilters,
@@ -40,9 +41,7 @@ const INITIAL_FILTERS: ProductFilters = {
 
 const CATEGORY_OPTIONS = [
   { value: 'all', label: 'Все категории' },
-  { value: 'electronics', label: 'Электроника' },
-  { value: 'clothes', label: 'Одежда' },
-  { value: 'home', label: 'Дом' },
+  ...Object.entries(PRODUCT_CATEGORY_LABELS).map(([value, label]) => ({ value, label })),
 ];
 
 const SORT_OPTIONS = [
@@ -154,7 +153,7 @@ export function CatalogPage() {
             <Text fz={14} c="dimmed">
               {getErrorMessage(error, 'Не удалось загрузить каталог')}
             </Text>
-            <Button variant="default" size="sm" onClick={() => void refetch()}>
+            <Button variant="default" size="sm" h={44} onClick={() => void refetch()}>
               Повторить
             </Button>
           </Stack>
@@ -165,7 +164,7 @@ export function CatalogPage() {
             <Text fz={14} c="dimmed">
               По выбранным фильтрам товаров нет.
             </Text>
-            <Button variant="default" size="sm" onClick={resetFilters}>
+            <Button variant="default" size="sm" h={44} onClick={resetFilters}>
               Сбросить фильтры
             </Button>
           </Stack>
@@ -183,6 +182,7 @@ export function CatalogPage() {
               <div ref={loadMoreRef} style={{ height: 1 }} />
               <Button
                 variant="default"
+                h={44}
                 onClick={() => void fetchNextPage()}
                 loading={isFetchingNextPage}
               >

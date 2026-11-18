@@ -3,6 +3,7 @@ import { CatalogPage } from '@/pages/catalog';
 import { HomePage } from '@/pages/home';
 import { LoginPage } from '@/pages/login';
 import { NotFoundPage } from '@/pages/not-found';
+import { ProductDetailPage } from '@/pages/product-detail';
 import { ProfilePage } from '@/pages/profile';
 import { RegisterPage } from '@/pages/register';
 import { GuestRoute } from './GuestRoute';
@@ -13,6 +14,7 @@ export function AppRouter() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/catalog" element={<CatalogPage />} />
+      <Route path="/product/:id" element={<ProductDetailPage />} />
 
       <Route element={<GuestRoute />}>
         <Route path="/login" element={<LoginPage />} />
