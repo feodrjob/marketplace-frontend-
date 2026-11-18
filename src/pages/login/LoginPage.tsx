@@ -4,6 +4,7 @@ import { zod4Resolver } from 'mantine-form-zod-resolver';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { type LoginFormValues, loginSchema } from '@/entities/user';
 import { useLoginMutation } from '@/features/auth-by-email';
+import { ENV } from '@/shared/config';
 import { getErrorMessage, getSafeRedirect, getValidationErrors } from '@/shared/lib';
 import { AuthCardLayout } from '@/shared/ui';
 
@@ -103,6 +104,12 @@ export function LoginPage() {
           >
             Войти
           </Button>
+
+          {ENV.USE_MOCKS && (
+            <Text fz={12} c="dimmed" ta="center">
+              Демо-режим: войдите с email seller@t-market.ru, чтобы открыть кабинет продавца.
+            </Text>
+          )}
         </Stack>
       </form>
     </AuthCardLayout>
