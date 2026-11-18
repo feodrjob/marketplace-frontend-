@@ -6,7 +6,7 @@ import type {
 } from '../model/types';
 
 const PAGE_SIZE = 20;
-const FIXED_DATE = '2026-11-01T10:00:00Z';
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 const PRODUCT_SEEDS: Array<Omit<Product, 'id' | 'status' | 'images' | 'createdAt' | 'updatedAt'>> =
   [
@@ -180,20 +180,23 @@ const PRODUCT_SEEDS: Array<Omit<Product, 'id' | 'status' | 'images' | 'createdAt
     },
   ];
 
-const DEMO_PRODUCTS: Product[] = PRODUCT_SEEDS.map((seed, index) => ({
-  ...seed,
-  id: `product-${index + 1}`,
-  status: 'ACTIVE',
-  images: [],
-  createdAt: FIXED_DATE,
-  updatedAt: FIXED_DATE,
-}));
+const DEMO_PRODUCTS: Product[] = PRODUCT_SEEDS.map((seed, index) => {
+  // Разные даты добавления, чтобы в каталоге были и свежие товары, и старые.
+  const createdAt = new Date(Date.now() - index * DAY_MS).toISOString();
 
-function parsePriceBounds(priceRange: string): [number | null, number | null] {
-  const parts = priceRange.split(',').map((part) => Number(part.trim()));
-  const min = Number.isFinite(parts[0]) && parts[0] > 0 ? parts[0] : null;
-  const max = Number.isFinite(parts[1]) && parts[1] > 0 ? parts[1] : null;
-  return [min, max];
+  return {
+    ...seed,
+    id: `product-${index + 1}`,
+    status: 'ACTIVE' as const,
+    images: [],
+    createdAt,
+    updatedAt: createdAt,
+  };
+});
+
+function parseBound(value: string): number | null {
+  const number = Number(value.trim());
+  return Number.isFinite(number) && number > 0 ? number : null;
 }
 
 export async function getMockProducts(
@@ -201,7 +204,8 @@ export async function getMockProducts(
   cursor: string | null = null,
   limit = PAGE_SIZE
 ): Promise<ProductListResponse> {
-  const [minPrice, maxPrice] = parsePriceBounds(filters.priceRange);
+  const minPrice = parseBound(filters.priceMin);
+  const maxPrice = parseBound(filters.priceMax);
 
   const filtered = DEMO_PRODUCTS.filter((item) => {
     if (filters.category !== 'all' && item.category !== filters.category) {

@@ -59,9 +59,10 @@ export const productApi = {
       params['f[category]'] = filters.category;
     }
 
-    const priceRange = typeof filters.priceRange === 'string' ? filters.priceRange.trim() : '';
-    if (priceRange) {
-      params['f[price]'] = priceRange;
+    const priceMin = filters.priceMin.trim();
+    const priceMax = filters.priceMax.trim();
+    if (priceMin || priceMax) {
+      params['f[price]'] = `${priceMin || '0'},${priceMax}`;
     }
 
     const res = await apiClient.get<unknown>('/catalog/products', {

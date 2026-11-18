@@ -3,6 +3,7 @@ export {
   getProductCategoryLabel,
   PRODUCT_CATEGORY_LABELS,
 } from './model/categories';
+export { isProductNew } from './model/product';
 export type {
   CreateProductData,
   Product,

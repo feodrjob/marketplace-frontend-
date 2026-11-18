@@ -93,6 +93,7 @@ export function CreateProductForm() {
 
         <Textarea
           label="Описание"
+          required
           minRows={4}
           autosize
           maxLength={2000}

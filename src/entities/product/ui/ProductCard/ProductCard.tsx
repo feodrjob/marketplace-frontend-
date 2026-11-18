@@ -1,7 +1,8 @@
-import { Card, Text } from '@mantine/core';
+import { Badge, Card, Group, Text } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import { Formatter } from '@/shared/lib';
 import { getProductCategoryLabel } from '../../model/categories';
+import { isProductNew } from '../../model/product';
 import type { Product } from '../../model/types';
 import classes from './ProductCard.module.css';
 
@@ -28,7 +29,14 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </Card.Section>
 
-      <Text className={classes.category}>{getProductCategoryLabel(product.category)}</Text>
+      <Group gap={6} mt={8} wrap="nowrap">
+        <Text className={classes.category}>{getProductCategoryLabel(product.category)}</Text>
+        {isProductNew(product.createdAt) && (
+          <Badge size="xs" variant="light" color="brandBlue">
+            Новинка
+          </Badge>
+        )}
+      </Group>
       <Text className={classes.title} lineClamp={2}>
         {product.title}
       </Text>

@@ -1,5 +1,8 @@
 import {
+  Anchor,
   Button,
+  CloseButton,
+  Group,
   Paper,
   Select,
   SimpleGrid,
@@ -35,7 +38,8 @@ const SKELETON_KEYS = [
 
 const INITIAL_FILTERS: ProductFilters = {
   category: 'all',
-  priceRange: '',
+  priceMin: '',
+  priceMax: '',
   sort: 'price,asc',
 };
 
@@ -54,11 +58,13 @@ export function CatalogPage() {
     initialValues: INITIAL_FILTERS,
   });
 
-  const [debouncedPriceRange] = useDebouncedValue(form.values.priceRange, 300);
+  const [debouncedPriceMin] = useDebouncedValue(form.values.priceMin, 300);
+  const [debouncedPriceMax] = useDebouncedValue(form.values.priceMax, 300);
 
   const filters: ProductFilters = {
     category: form.values.category,
-    priceRange: debouncedPriceRange,
+    priceMin: debouncedPriceMin,
+    priceMax: debouncedPriceMax,
     sort: form.values.sort,
   };
 
@@ -114,7 +120,7 @@ export function CatalogPage() {
       </div>
 
       <Paper className={classes.filtersCard} radius="sm" withBorder p="md">
-        <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
+        <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md">
           <Select
             label="Категория"
             size="sm"
@@ -123,13 +129,45 @@ export function CatalogPage() {
             {...form.getInputProps('category')}
           />
 
-          <TextInput
-            label="Цена, ₽"
-            description="Диапазон от и до, например 1000,25000"
-            size="sm"
-            placeholder="1000,25000"
-            {...form.getInputProps('priceRange')}
-          />
+          <SimpleGrid cols={2} spacing="sm">
+            <TextInput
+              label="Цена от, ₽"
+              size="sm"
+              inputMode="numeric"
+              placeholder="1000"
+              rightSection={
+                form.values.priceMin ? (
+                  <CloseButton
+                    aria-label="Очистить минимальную цену"
+                    onClick={() => form.setFieldValue('priceMin', '')}
+                  />
+                ) : null
+              }
+              {...form.getInputProps('priceMin')}
+              onChange={(event) =>
+                form.setFieldValue('priceMin', event.currentTarget.value.replace(/\D/g, ''))
+              }
+            />
+
+            <TextInput
+              label="Цена до, ₽"
+              size="sm"
+              inputMode="numeric"
+              placeholder="25000"
+              rightSection={
+                form.values.priceMax ? (
+                  <CloseButton
+                    aria-label="Очистить максимальную цену"
+                    onClick={() => form.setFieldValue('priceMax', '')}
+                  />
+                ) : null
+              }
+              {...form.getInputProps('priceMax')}
+              onChange={(event) =>
+                form.setFieldValue('priceMax', event.currentTarget.value.replace(/\D/g, ''))
+              }
+            />
+          </SimpleGrid>
 
           <Select
             label="Сортировка"
@@ -139,6 +177,12 @@ export function CatalogPage() {
             {...form.getInputProps('sort')}
           />
         </SimpleGrid>
+
+        <Group justify="flex-end" gap={0}>
+          <Anchor component="button" onClick={resetFilters} className={classes.resetLink}>
+            Сбросить фильтры
+          </Anchor>
+        </Group>
       </Paper>
 
       {isLoading ? (

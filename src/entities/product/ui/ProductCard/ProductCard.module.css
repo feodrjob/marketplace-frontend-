@@ -29,7 +29,6 @@
 }
 
 .category {
-  margin-top: 8px;
   color: var(--mantine-color-dimmed);
   font-size: 11px;
   letter-spacing: 0.3px;
