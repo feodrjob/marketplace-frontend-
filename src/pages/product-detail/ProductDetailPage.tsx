@@ -1,14 +1,22 @@
 import { Anchor, Button, Divider, Group, Paper, Skeleton, Stack, Text, Title } from '@mantine/core';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { getProductCategoryLabel, useProductQuery } from '@/entities/product';
 import { Formatter, getErrorMessage } from '@/shared/lib';
 import classes from './ProductDetailPage.module.css';
 
 export function ProductDetailPage() {
   const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { data: product, isLoading, isError, error, refetch, isFetching } = useProductQuery(id);
 
-  const backLink = (
+  const fromCatalog = Boolean((location.state as { fromCatalog?: boolean } | null)?.fromCatalog);
+
+  const backLink = fromCatalog ? (
+    <Anchor component="button" onClick={() => navigate(-1)} className={classes.backLink}>
+      ← Каталог
+    </Anchor>
+  ) : (
     <Anchor component={Link} to="/catalog" className={classes.backLink}>
       ← Каталог
     </Anchor>

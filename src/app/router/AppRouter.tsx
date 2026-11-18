@@ -3,6 +3,7 @@ import { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { GuestRoute } from './GuestRoute';
 import { ProtectedRoute } from './ProtectedRoute';
+import { ScrollRestoration } from './ScrollRestoration';
 import { SellerRoute } from './SellerRoute';
 
 const HomePage = lazy(() => import('@/pages/home'));
@@ -24,28 +25,31 @@ function PageFallback() {
 
 export function AppRouter() {
   return (
-    <Suspense fallback={<PageFallback />}>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/catalog" element={<CatalogPage />} />
-        <Route path="/product/:id" element={<ProductDetailPage />} />
+    <>
+      <ScrollRestoration />
+      <Suspense fallback={<PageFallback />}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/catalog" element={<CatalogPage />} />
+          <Route path="/product/:id" element={<ProductDetailPage />} />
 
-        <Route element={<GuestRoute />}>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-        </Route>
+          <Route element={<GuestRoute />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+          </Route>
 
-        <Route element={<ProtectedRoute />}>
-          <Route path="/profile" element={<ProfilePage />} />
-        </Route>
+          <Route element={<ProtectedRoute />}>
+            <Route path="/profile" element={<ProfilePage />} />
+          </Route>
 
-        <Route element={<SellerRoute />}>
-          <Route path="/seller/products/new" element={<SellerProductCreatePage />} />
-        </Route>
+          <Route element={<SellerRoute />}>
+            <Route path="/seller/products/new" element={<SellerProductCreatePage />} />
+          </Route>
 
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </Suspense>
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
+    </>
   );
 }
 

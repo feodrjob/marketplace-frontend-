@@ -16,6 +16,7 @@ export function ProductCard({ product }: ProductCardProps) {
     <Card
       component={Link}
       to={`/product/${product.id}`}
+      state={{ fromCatalog: true }}
       padding="sm"
       radius="sm"
       withBorder

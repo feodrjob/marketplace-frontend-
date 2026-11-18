@@ -3,7 +3,13 @@
   align-items: center;
   align-self: flex-start;
   min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--mantine-color-anchor);
+  font-family: inherit;
   font-size: 14px;
+  cursor: pointer;
 }
 
 .layout {
