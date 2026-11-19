@@ -1,125 +1,112 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import { ELocalKey, ENV } from '@/shared/config';
 
 /**
- * Хранение access-токена ИСКЛЮЧИТЕЛЬНО в оперативной памяти модуля (JS closure).
- * Токен не сохраняется в localStorage/sessionStorage, что исключает его кражу через XSS.
+ * Хранение access-токена в localStorage для мгновенного восстановления сессии при F5.
+ * Долгоживущий refresh-токен остаётся под контролем бэкенда в HttpOnly Cookie.
  */
-let inMemoryAccessToken: string | null = null;
-
 export const setAccessToken = (token: string | null): void => {
-  inMemoryAccessToken = token;
+  if (token) {
+    localStorage.setItem(ELocalKey.ACCESS_TOKEN, token);
+  } else {
+    localStorage.removeItem(ELocalKey.ACCESS_TOKEN);
+  }
 };
 
 export const getAccessToken = (): string | null => {
-  return inMemoryAccessToken;
+  return localStorage.getItem(ELocalKey.ACCESS_TOKEN);
 };
 
 // Базовый клиент Axios
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api/v1',
+  baseURL: ENV.API_URL,
   withCredentials: true, // КРИТИЧНО: автоматическая отправка HttpOnly Cookie (refresh-токен)
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'application/json',
+  },
 });
 
-// Перехватчик запросов: автоматическая инъекция JWT Bearer токена из памяти
+// Перехватчик запросов: автоматическая инъекция JWT Bearer токена
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  if (inMemoryAccessToken && config.headers) {
-    config.headers.Authorization = `Bearer ${inMemoryAccessToken}`;
+  const token = getAccessToken();
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
-// Очередь запросов, ожидающих завершения обновления токена
-let isRefreshing = false;
-let failedQueue: Array<{
-  resolve: (token: string) => void;
-  reject: (error: unknown) => void;
-}> = [];
-
-const processQueue = (error: unknown, token: string | null = null) => {
-  failedQueue.forEach((promise) => {
-    if (error) {
-      promise.reject(error);
-    } else if (token) {
-      promise.resolve(token);
-    }
-  });
-  failedQueue = [];
-};
-
 /**
- * Функция тихого обновления access-токена (Silent Refresh).
- * Браузер сам прикрепляет HttpOnly Cookie с refresh-токеном.
+ * Единый промис обновления access-токена.
+ * Все параллельные 401 и старт приложения ждут один и тот же запрос,
+ * чтобы не ловить гонку с ротацией refresh-токена на бэкенде.
  */
-export const silentRefresh = async (): Promise<string | null> => {
-  try {
-    const response = await axios.post<{ accessToken: string }>(
-      `${import.meta.env.VITE_API_URL || '/api/v1'}/auth/refresh`,
-      {},
-      { withCredentials: true }
-    );
-    const newToken = response.data.accessToken;
-    setAccessToken(newToken);
-    return newToken;
-  } catch {
-    setAccessToken(null);
-    return null;
+let refreshPromise: Promise<string | null> | null = null;
+
+export function refreshAccessToken(): Promise<string | null> {
+  if (!refreshPromise) {
+    refreshPromise = axios
+      .post<{ accessToken?: unknown }>(`${ENV.API_URL}/auth/refresh`, {}, { withCredentials: true })
+      .then(({ data }) => {
+        if (typeof data?.accessToken !== 'string' || !data.accessToken) {
+          return null;
+        }
+        setAccessToken(data.accessToken);
+        return data.accessToken;
+      })
+      .catch((error: unknown) => {
+        // 401/403 — refresh отозван или истёк, сессию нужно сбросить.
+        // Сетевую ошибку не считаем разлогином: access-токен остаётся.
+        if (
+          axios.isAxiosError(error) &&
+          (error.response?.status === 401 || error.response?.status === 403)
+        ) {
+          setAccessToken(null);
+        }
+        return null;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
   }
-};
+
+  return refreshPromise;
+}
+
+// Обратная совместимость: раньше функция называлась silentRefresh.
+export const silentRefresh = refreshAccessToken;
+
+// На этих ручках 401 — это бизнес-ошибка, а не истёкшая сессия.
+const SKIP_REFRESH = /\/auth\/(login|register|refresh|logout)/;
 
 // Перехватчик ответов: реактивная обработка 401 Unauthorized
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
+    const originalRequest = error.config as
+      | (InternalAxiosRequestConfig & { _retry?: boolean })
+      | undefined;
 
-    // Если получили 401 Unauthorized и это не сам запрос рефреша
     if (
-      error.response?.status === 401 &&
-      originalRequest &&
-      !originalRequest._retry &&
-      !originalRequest.url?.includes('/auth/refresh')
+      error.response?.status !== 401 ||
+      !originalRequest ||
+      originalRequest._retry ||
+      SKIP_REFRESH.test(originalRequest.url ?? '')
     ) {
-      if (isRefreshing) {
-        // Если рефреш уже выполняется другим запросом — ждём в очереди
-        return new Promise<string>((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        })
-          .then((token) => {
-            if (originalRequest.headers) {
-              originalRequest.headers.Authorization = `Bearer ${token}`;
-            }
-            return apiClient(originalRequest);
-          })
-          .catch((err) => Promise.reject(err));
-      }
-
-      originalRequest._retry = true;
-      isRefreshing = true;
-
-      try {
-        const newToken = await silentRefresh();
-        if (newToken) {
-          processQueue(null, newToken);
-          if (originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
-          }
-          return apiClient(originalRequest);
-        } else {
-          processQueue(error, null);
-          return Promise.reject(error);
-        }
-      } catch (refreshErr) {
-        processQueue(refreshErr, null);
-        return Promise.reject(refreshErr);
-      } finally {
-        isRefreshing = false;
-      }
+      return Promise.reject(error);
     }
 
-    return Promise.reject(error);
+    originalRequest._retry = true;
+
+    // Все параллельные 401 ждут один и тот же refresh.
+    const newToken = await refreshAccessToken();
+    if (!newToken) {
+      return Promise.reject(error);
+    }
+
+    if (originalRequest.headers) {
+      originalRequest.headers.Authorization = `Bearer ${newToken}`;
+    }
+    return apiClient(originalRequest);
   }
 );
 

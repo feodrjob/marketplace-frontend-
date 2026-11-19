@@ -1,22 +1,49 @@
-export type UserRole = 'ROLE_BUYER' | 'ROLE_SELLER' | 'ROLE_ADMIN';
+export type UserRole = 'BUYER' | 'SELLER' | 'ADMIN';
 
-export interface User {
+/**
+ * Профиль из Auth Service (GET /api/v1/users/me).
+ * Повторяет UserProfile из auth.yaml: один аккаунт — одна роль.
+ */
+export interface UserProfile {
   id: string;
   email: string;
-  name: string;
-  roles: UserRole[];
-  buyerId: string;
-  sellerId?: string;
-  bonusBalance: number;
+  role: UserRole;
+  fullName?: string;
+  phone?: string;
+  companyName?: string | null;
+  inn?: string;
+  description?: string;
+  department?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// UI-код использует короткое имя User
+export type User = UserProfile;
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterBuyerData {
+  email: string;
+  password: string;
+  fullName?: string;
+  phone?: string;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  user: UserProfile;
 }
 
 export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  isInitializing: boolean;
+  isLoading: boolean;
+  isFetching: boolean;
   isBuyer: boolean;
   isSeller: boolean;
   isAdmin: boolean;
-  login: (email: string, password?: string) => Promise<{ success: boolean; user?: User; error?: string }>;
-  logout: () => void;
 }

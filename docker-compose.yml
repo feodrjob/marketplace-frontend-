@@ -1,0 +1,19 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Compile-time флаг Vite. В Docker-образе моки всегда выключены:
+        # локальный .env с VITE_USE_MOCKS=true не должен попадать в сборку.
+        VITE_USE_MOCKS: "false"
+    container_name: marketplace-frontend
+    environment:
+      # Runtime-адрес API Gateway. Без завершающего слэша.
+      BACKEND_URL: ${BACKEND_URL:-http://host.docker.internal:8080}
+    # Позволяет контейнеру обращаться к бэкенду, запущенному на хосте (Linux)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${FRONTEND_PORT:-8082}:80"
+    restart: unless-stopped
