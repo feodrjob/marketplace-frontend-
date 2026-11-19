@@ -1,10 +1,7 @@
 name: Deploy frontend to VM
 
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types: [completed]
-    branches: [main]
+  workflow_call:
 
 permissions: {}
 
@@ -14,11 +11,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: >-
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'push' &&
-      github.event.workflow_run.head_branch == 'main' &&
-      github.event.workflow_run.head_repository.full_name == github.repository
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -26,7 +19,7 @@ jobs:
       - name: Deploy tested frontend commit
         shell: bash
         env:
-          DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
+          DEPLOY_SHA: ${{ github.sha }}
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_PORT: ${{ vars.DEPLOY_PORT || '22' }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
@@ -67,10 +60,10 @@ jobs:
           cd "$HOME/marketplace-frontend"
           export GIT_TERMINAL_PROMPT=0
 
-          git fetch origin main
+          git fetch origin develop:refs/remotes/origin/develop
 
           if [[ "$(git rev-parse FETCH_HEAD)" != "$deploy_sha" ]]; then
-            echo 'Skipping deployment because main has a newer commit awaiting CI.'
+            echo 'Skipping deployment because develop has a newer commit awaiting CI.'
             exit 0
           fi
 
@@ -79,11 +72,15 @@ jobs:
             exit 1
           fi
 
-          git switch main
+          if git show-ref --verify --quiet refs/heads/develop; then
+            git switch develop
+          else
+            git switch --track -c develop origin/develop
+          fi
           git merge --ff-only "$deploy_sha"
 
           if [[ "$(git rev-parse HEAD)" != "$deploy_sha" ]]; then
-            echo 'The local main branch differs from the tested commit.' >&2
+            echo 'The local develop branch differs from the tested commit.' >&2
             exit 1
           fi
 
