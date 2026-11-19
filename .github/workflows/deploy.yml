@@ -1,0 +1,107 @@
+name: Deploy frontend to VM
+
+on:
+  workflow_run:
+    workflows: ["Frontend CI"]
+    types: [completed]
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: marketplace-frontend-vm
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Deploy tested frontend commit
+        shell: bash
+        env:
+          DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ vars.DEPLOY_PORT || '22' }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+
+        run: |
+          set -euo pipefail
+
+          [[ "$DEPLOY_SHA" =~ ^[0-9a-f]{40}$ ]]
+          : "${DEPLOY_HOST:?Missing DEPLOY_HOST}"
+          : "${DEPLOY_USER:?Missing DEPLOY_USER}"
+          : "${DEPLOY_SSH_KEY:?Missing DEPLOY_SSH_KEY}"
+          : "${DEPLOY_KNOWN_HOSTS:?Missing DEPLOY_KNOWN_HOSTS}"
+
+          umask 077
+          ssh_dir="$(mktemp -d)"
+          trap 'rm -rf -- "$ssh_dir"' EXIT
+
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$ssh_dir/key"
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > "$ssh_dir/known_hosts"
+
+          ssh -T \
+            -p "$DEPLOY_PORT" \
+            -i "$ssh_dir/key" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -o "UserKnownHostsFile=$ssh_dir/known_hosts" \
+            -o ConnectTimeout=15 \
+            -- "$DEPLOY_USER@$DEPLOY_HOST" \
+            "bash -se -- '$DEPLOY_SHA'" <<'DEPLOY'
+          set -euo pipefail
+
+          deploy_sha="$1"
+          [[ "$deploy_sha" =~ ^[0-9a-f]{40}$ ]]
+
+          cd "$HOME/marketplace-frontend"
+          export GIT_TERMINAL_PROMPT=0
+
+          git fetch origin main
+
+          if [[ "$(git rev-parse FETCH_HEAD)" != "$deploy_sha" ]]; then
+            echo 'Skipping deployment because main has a newer commit awaiting CI.'
+            exit 0
+          fi
+
+          if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
+            echo 'The deployment checkout has changes to tracked files.' >&2
+            exit 1
+          fi
+
+          git switch main
+          git merge --ff-only "$deploy_sha"
+
+          if [[ "$(git rev-parse HEAD)" != "$deploy_sha" ]]; then
+            echo 'The local main branch differs from the tested commit.' >&2
+            exit 1
+          fi
+
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo 'The deployment checkout has untracked files.' >&2
+            exit 1
+          fi
+
+          git rev-parse HEAD
+
+          if ! docker compose up \
+            --build \
+            --remove-orphans \
+            --wait \
+            --wait-timeout 180; then
+            docker compose ps -a
+            exit 1
+          fi
+
+          docker compose ps
+          DEPLOY
