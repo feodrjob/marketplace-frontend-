@@ -9,7 +9,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { zodResolver } from 'mantine-form-zod-resolver';
+import { zod4Resolver } from 'mantine-form-zod-resolver';
 import { Link, useNavigate } from 'react-router-dom';
 import { type RegisterBuyerFormValues, registerBuyerSchema } from '@/entities/user';
 import { useRegisterBuyerMutation } from '@/features/auth-by-email';
@@ -30,7 +30,7 @@ export function RegisterPage() {
       confirmPassword: '',
       termsAccepted: false,
     },
-    validate: zodResolver(registerBuyerSchema),
+    validate: zod4Resolver(registerBuyerSchema),
   });
 
   const handleSubmit = form.onSubmit((values) => {
