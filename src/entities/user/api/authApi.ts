@@ -1,6 +1,12 @@
 import { apiClient } from '@/shared/api';
 import { ENV } from '@/shared/config';
-import type { AuthResponse, LoginCredentials, RegisterBuyerData, User } from '../model/types';
+import type {
+  AuthResponse,
+  LoginCredentials,
+  RegisterBuyerData,
+  RegisterSellerData,
+  User,
+} from '../model/types';
 
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
@@ -18,6 +24,15 @@ export const authApi = {
       return authMocks.registerBuyer(data);
     }
     const res = await apiClient.post<AuthResponse>('/auth/register/buyer', data);
+    return res.data;
+  },
+
+  registerSeller: async (data: RegisterSellerData): Promise<AuthResponse> => {
+    if (ENV.USE_MOCKS) {
+      const { authMocks } = await import('./authMocks');
+      return authMocks.registerSeller(data);
+    }
+    const res = await apiClient.post<AuthResponse>('/auth/register/seller', data);
     return res.data;
   },
 

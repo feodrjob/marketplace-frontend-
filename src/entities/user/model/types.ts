@@ -33,6 +33,14 @@ export interface RegisterBuyerData {
   phone?: string;
 }
 
+export interface RegisterSellerData {
+  email: string;
+  password: string;
+  companyName: string;
+  inn: string;
+  description?: string;
+}
+
 export interface AuthResponse {
   accessToken: string;
   user: UserProfile;
