@@ -4,9 +4,13 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   checks:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v4
@@ -31,3 +35,13 @@ jobs:
 
       - name: Audit production dependencies
         run: pnpm audit --prod --audit-level=high
+
+      - name: Build Docker image
+        run: docker compose build frontend
+
+  deploy:
+    needs: checks
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    permissions: {}
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
