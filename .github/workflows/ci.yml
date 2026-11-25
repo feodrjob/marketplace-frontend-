@@ -1,7 +1,9 @@
 name: CI
 
 on:
+  workflow_call:
   push:
+    branches-ignore: [main, codex/swarm-deploy]
   pull_request:
 
 permissions:
@@ -38,10 +40,3 @@ jobs:
 
       - name: Build Docker image
         run: docker compose build frontend
-
-  deploy:
-    needs: checks
-    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
-    permissions: {}
-    uses: ./.github/workflows/deploy.yml
-    secrets: inherit

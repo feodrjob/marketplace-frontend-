@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: ghcr.io/${GHCR_OWNER:?Set GHCR_OWNER}/marketplace-frontend:${IMAGE_TAG:?Set IMAGE_TAG}
+    # Auth/users requests are routed directly by Traefik. This upstream is
+    # retained for nginx's /api fallback; no dependency on host.docker.internal.
+    environment:
+      BACKEND_URL: http://marketplace-backend_auth:8081
+    networks: [edge]
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+      update_config:
+        parallelism: 1
+        order: start-first
+        failure_action: rollback
+        monitor: 30s
+      rollback_config:
+        order: stop-first
+        monitor: 30s
+      labels:
+        traefik.enable: 'true'
+        traefik.swarm.network: marketplace-edge
+        traefik.http.routers.marketplace-frontend.rule: Host(`${APP_DOMAIN:?Set APP_DOMAIN}`)
+        traefik.http.routers.marketplace-frontend.entrypoints: websecure
+        traefik.http.routers.marketplace-frontend.tls.certresolver: le
+        traefik.http.routers.marketplace-frontend.priority: '1'
+        traefik.http.services.marketplace-frontend.loadbalancer.server.port: '80'
+
+networks:
+  edge:
+    external: true
+    name: marketplace-edge
