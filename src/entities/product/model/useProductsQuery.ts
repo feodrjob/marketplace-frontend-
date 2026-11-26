@@ -1,4 +1,4 @@
-import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { productApi } from '../api/productApi';
 import type { ProductFilters, ProductListResponse } from './types';
 
@@ -10,13 +10,15 @@ export const PRODUCT_QUERY_KEYS = {
 
 const PAGE_SIZE = 20;
 
-export function useProductsQuery(filters: ProductFilters) {
+export function useProductsQuery(filters: ProductFilters, enabled = true) {
   return useInfiniteQuery({
     queryKey: PRODUCT_QUERY_KEYS.list(filters),
     queryFn: ({ pageParam, signal }) => productApi.list(filters, pageParam, PAGE_SIZE, signal),
-    initialPageParam: null as string | null,
-    getNextPageParam: (lastPage: ProductListResponse) =>
-      lastPage.hasMore ? lastPage.nextCursor : undefined,
-    placeholderData: keepPreviousData,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage: ProductListResponse) => {
+      const loaded = (lastPage.page + 1) * lastPage.size;
+      return loaded < lastPage.total ? lastPage.page + 1 : undefined;
+    },
+    enabled,
   });
 }

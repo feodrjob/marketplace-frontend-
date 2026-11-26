@@ -14,7 +14,8 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDebouncedValue, useIntersection } from '@mantine/hooks';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   PRODUCT_CATEGORY_LABELS,
   type Product,
@@ -37,36 +38,87 @@ const SKELETON_KEYS = [
 ] as const;
 
 const INITIAL_FILTERS: ProductFilters = {
+  q: '',
   category: 'all',
   priceMin: '',
   priceMax: '',
-  sort: 'price,asc',
+  sort: '',
 };
+
+const CATEGORY_VALUES = new Set(Object.keys(PRODUCT_CATEGORY_LABELS));
+
+const SORT_VALUES = new Set(['', 'createdAt,desc', 'createdAt,asc', 'price,asc', 'price,desc']);
 
 const CATEGORY_OPTIONS = [
   { value: 'all', label: 'Все категории' },
   ...Object.entries(PRODUCT_CATEGORY_LABELS).map(([value, label]) => ({ value, label })),
 ];
 
-const SORT_OPTIONS = [
-  { value: 'price,asc', label: 'Сначала дешевле' },
-  { value: 'price,desc', label: 'Сначала дороже' },
-];
+function digits(value: string | null): string {
+  return (value ?? '').replace(/\D/g, '');
+}
+
+function parseFilters(params: URLSearchParams): ProductFilters {
+  const category = params.get('category') ?? 'all';
+  const sort = params.get('sort') ?? '';
+
+  return {
+    q: (params.get('q') ?? '').trim(),
+    category: category === 'all' || CATEGORY_VALUES.has(category) ? category : 'all',
+    priceMin: digits(params.get('priceMin')),
+    priceMax: digits(params.get('priceMax')),
+    sort: SORT_VALUES.has(sort) ? sort : '',
+  };
+}
+
+function buildSearchParams(filters: ProductFilters): URLSearchParams {
+  const next = new URLSearchParams();
+
+  if (filters.q) {
+    next.set('q', filters.q);
+  }
+  if (filters.category !== 'all') {
+    next.set('category', filters.category);
+  }
+  if (filters.priceMin) {
+    next.set('priceMin', filters.priceMin);
+  }
+  if (filters.priceMax) {
+    next.set('priceMax', filters.priceMax);
+  }
+  if (filters.sort) {
+    next.set('sort', filters.sort);
+  }
+
+  return next;
+}
 
 export function CatalogPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [initialFilters] = useState(() => parseFilters(searchParams));
+
   const form = useForm<ProductFilters>({
-    initialValues: INITIAL_FILTERS,
+    initialValues: initialFilters,
   });
 
+  const [debouncedQ] = useDebouncedValue(form.values.q, 300);
   const [debouncedPriceMin] = useDebouncedValue(form.values.priceMin, 300);
   const [debouncedPriceMax] = useDebouncedValue(form.values.priceMax, 300);
 
   const filters: ProductFilters = {
+    q: debouncedQ.trim(),
     category: form.values.category,
     priceMin: debouncedPriceMin,
     priceMax: debouncedPriceMax,
     sort: form.values.sort,
   };
+
+  const minPrice = filters.priceMin ? Number(filters.priceMin) : null;
+  const maxPrice = filters.priceMax ? Number(filters.priceMax) : null;
+  const priceError =
+    minPrice !== null && maxPrice !== null && minPrice > maxPrice
+      ? 'Минимальная цена больше максимальной'
+      : null;
 
   const {
     data,
@@ -77,7 +129,7 @@ export function CatalogPage() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useProductsQuery(filters);
+  } = useProductsQuery(filters, priceError === null);
 
   const { ref: loadMoreRef, entry } = useIntersection({ rootMargin: '300px' });
 
@@ -98,6 +150,48 @@ export function CatalogPage() {
   }, [data]);
 
   const total = data?.pages[0]?.total ?? 0;
+
+  const sortOptions = useMemo(
+    () => [
+      { value: '', label: filters.q ? 'По релевантности' : 'Сначала новые' },
+      ...(filters.q ? [{ value: 'createdAt,desc', label: 'Сначала новые' }] : []),
+      { value: 'createdAt,asc', label: 'Сначала старые' },
+      { value: 'price,asc', label: 'Сначала дешевле' },
+      { value: 'price,desc', label: 'Сначала дороже' },
+    ],
+    [filters.q]
+  );
+
+  useEffect(() => {
+    if (!filters.q && form.values.sort === 'createdAt,desc') {
+      form.setFieldValue('sort', '');
+    }
+  }, [filters.q, form.values.sort, form.setFieldValue]);
+
+  useEffect(() => {
+    const next = buildSearchParams({
+      q: filters.q,
+      category: filters.category,
+      priceMin: filters.priceMin,
+      priceMax: filters.priceMax,
+      sort: filters.sort,
+    });
+    const current = new URLSearchParams(searchParams);
+
+    if (next.toString() === current.toString()) {
+      return;
+    }
+
+    setSearchParams(next, { replace: true });
+  }, [
+    filters.q,
+    filters.category,
+    filters.priceMin,
+    filters.priceMax,
+    filters.sort,
+    searchParams,
+    setSearchParams,
+  ]);
 
   useEffect(() => {
     if (!entry?.isIntersecting || !hasNextPage || isFetchingNextPage) {
@@ -121,6 +215,21 @@ export function CatalogPage() {
 
       <Paper className={classes.filtersCard} radius="sm" withBorder p="md">
         <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md">
+          <TextInput
+            label="Поиск"
+            size="sm"
+            placeholder="Название или описание"
+            rightSection={
+              form.values.q ? (
+                <CloseButton
+                  aria-label="Очистить поиск"
+                  onClick={() => form.setFieldValue('q', '')}
+                />
+              ) : null
+            }
+            {...form.getInputProps('q')}
+          />
+
           <Select
             label="Категория"
             size="sm"
@@ -163,6 +272,7 @@ export function CatalogPage() {
                 ) : null
               }
               {...form.getInputProps('priceMax')}
+              error={priceError}
               onChange={(event) =>
                 form.setFieldValue('priceMax', event.currentTarget.value.replace(/\D/g, ''))
               }
@@ -173,7 +283,7 @@ export function CatalogPage() {
             label="Сортировка"
             size="sm"
             allowDeselect={false}
-            data={SORT_OPTIONS}
+            data={sortOptions}
             {...form.getInputProps('sort')}
           />
         </SimpleGrid>
@@ -185,7 +295,13 @@ export function CatalogPage() {
         </Group>
       </Paper>
 
-      {isLoading ? (
+      {priceError ? (
+        <Paper p="lg" radius="sm" withBorder ta="center">
+          <Text fz={14} c="dimmed">
+            Проверьте диапазон цены: минимальная цена больше максимальной.
+          </Text>
+        </Paper>
+      ) : isLoading ? (
         <SimpleGrid cols={{ base: 2, sm: 3, md: 4 }} spacing={16}>
           {SKELETON_KEYS.map((key) => (
             <Skeleton key={key} height={240} radius="sm" />
@@ -206,7 +322,9 @@ export function CatalogPage() {
         <Paper p="lg" radius="sm" withBorder ta="center">
           <Stack gap="sm" align="center">
             <Text fz={14} c="dimmed">
-              По выбранным фильтрам товаров нет.
+              {filters.q
+                ? `По запросу «${filters.q}» ничего не найдено.`
+                : 'По выбранным фильтрам товаров нет.'}
             </Text>
             <Button variant="default" size="sm" h={44} onClick={resetFilters}>
               Сбросить фильтры

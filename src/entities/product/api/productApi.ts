@@ -28,8 +28,8 @@ function isProductListResponse(value: unknown): value is ProductListResponse {
     isRecord(value) &&
     Array.isArray(value.items) &&
     value.items.every(isProduct) &&
-    (typeof value.nextCursor === 'string' || value.nextCursor === null) &&
-    typeof value.hasMore === 'boolean' &&
+    typeof value.page === 'number' &&
+    typeof value.size === 'number' &&
     typeof value.total === 'number'
   );
 }
@@ -37,22 +37,26 @@ function isProductListResponse(value: unknown): value is ProductListResponse {
 export const productApi = {
   list: async (
     filters: ProductFilters,
-    cursor: string | null = null,
-    limit = DEFAULT_LIMIT,
+    page = 0,
+    size = DEFAULT_LIMIT,
     signal?: AbortSignal
   ): Promise<ProductListResponse> => {
     if (ENV.USE_MOCKS) {
       const { getMockProducts } = await import('./productMocks');
-      return getMockProducts(filters, cursor, limit);
+      return getMockProducts(filters, page, size);
     }
 
     const params: Record<string, string | number> = {
-      sort: filters.sort,
-      limit,
+      page,
+      size,
     };
 
-    if (cursor) {
-      params.cursor = cursor;
+    if (filters.q.trim()) {
+      params.q = filters.q.trim();
+    }
+
+    if (filters.sort) {
+      params.sort = filters.sort;
     }
 
     if (filters.category && filters.category !== 'all') {
@@ -62,7 +66,8 @@ export const productApi = {
     const priceMin = filters.priceMin.trim();
     const priceMax = filters.priceMax.trim();
     if (priceMin || priceMax) {
-      params['f[price]'] = `${priceMin || '0'},${priceMax}`;
+      // Бэкенд принимает только пару min,max и оба значения обязательны.
+      params['f[price]'] = `${priceMin || '0'},${priceMax || '999999999'}`;
     }
 
     const res = await apiClient.get<unknown>('/catalog/products', {

@@ -25,6 +25,7 @@ export interface Product {
 }
 
 export interface ProductFilters {
+  q: string;
   category: string;
   priceMin: string;
   priceMax: string;
@@ -33,8 +34,8 @@ export interface ProductFilters {
 
 export interface ProductListResponse {
   items: Product[];
-  nextCursor: string | null;
-  hasMore: boolean;
+  page: number;
+  size: number;
   total: number;
 }
 

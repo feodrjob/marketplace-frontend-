@@ -199,13 +199,36 @@ function parseBound(value: string): number | null {
   return Number.isFinite(number) && number > 0 ? number : null;
 }
 
+function queryWords(q: string): string[] {
+  return q.toLowerCase().split(/\s+/).filter(Boolean);
+}
+
+function matchesQuery(product: Product, words: string[]): boolean {
+  if (words.length === 0) {
+    return true;
+  }
+
+  const haystack = `${product.title} ${product.description ?? ''}`.toLowerCase();
+  return words.every((word) => haystack.includes(word));
+}
+
+function relevanceScore(product: Product, words: string[]): number {
+  const title = product.title.toLowerCase();
+  const description = (product.description ?? '').toLowerCase();
+
+  return words.reduce((score, word) => {
+    return score + (title.includes(word) ? 3 : 0) + (description.includes(word) ? 1 : 0);
+  }, 0);
+}
+
 export async function getMockProducts(
   filters: ProductFilters,
-  cursor: string | null = null,
-  limit = PAGE_SIZE
+  page = 0,
+  size = PAGE_SIZE
 ): Promise<ProductListResponse> {
   const minPrice = parseBound(filters.priceMin);
   const maxPrice = parseBound(filters.priceMax);
+  const words = queryWords(filters.q);
 
   const filtered = DEMO_PRODUCTS.filter((item) => {
     if (filters.category !== 'all' && item.category !== filters.category) {
@@ -217,23 +240,42 @@ export async function getMockProducts(
     if (maxPrice !== null && item.price > maxPrice) {
       return false;
     }
-    return true;
+    return matchesQuery(item, words);
   });
 
-  const sorted = [...filtered].sort((a, b) =>
-    filters.sort === 'price,desc' ? b.price - a.price : a.price - b.price
-  );
+  const sorted = [...filtered].sort((a, b) => {
+    if (filters.sort === 'price,asc') {
+      return a.price - b.price;
+    }
+    if (filters.sort === 'price,desc') {
+      return b.price - a.price;
+    }
+    if (filters.sort === 'createdAt,asc') {
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    }
+    if (filters.sort === 'createdAt,desc') {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
 
-  const cursorIndex = cursor ? sorted.findIndex((item) => item.id === cursor) : -1;
-  const start = cursorIndex >= 0 ? cursorIndex + 1 : 0;
-  const items = sorted.slice(start, start + limit);
-  const hasMore = start + items.length < sorted.length;
-  const lastItem = items[items.length - 1];
+    if (words.length > 0) {
+      const scoreDiff = relevanceScore(b, words) - relevanceScore(a, words);
+      if (scoreDiff !== 0) {
+        return scoreDiff;
+      }
+    }
+
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
+  const safePage = Math.max(0, page);
+  const safeSize = Math.max(1, size);
+  const start = safePage * safeSize;
+  const items = sorted.slice(start, start + safeSize);
 
   return {
     items,
-    nextCursor: hasMore && lastItem ? lastItem.id : null,
-    hasMore,
+    page: safePage,
+    size: safeSize,
     total: sorted.length,
   };
 }
