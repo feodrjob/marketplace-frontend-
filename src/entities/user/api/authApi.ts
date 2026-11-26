@@ -1,6 +1,35 @@
-import { apiClient } from '@/shared/api';
+import {
+  type AuthResponse as GeneratedAuthResponse,
+  type UserProfile as GeneratedUserProfile,
+  getAuthService,
+} from '@/shared/api/generated/auth';
 import { ENV } from '@/shared/config';
 import type { AuthResponse, LoginCredentials, RegisterBuyerData, User } from '../model/types';
+
+const auth = getAuthService();
+
+function toUser(user: GeneratedUserProfile): User {
+  return {
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    fullName: user.fullName ?? undefined,
+    phone: user.phone ?? undefined,
+    companyName: user.companyName ?? null,
+    inn: user.inn ?? undefined,
+    description: user.description ?? undefined,
+    department: user.department ?? undefined,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+  };
+}
+
+function toAuthResponse(data: GeneratedAuthResponse): AuthResponse {
+  return {
+    accessToken: data.accessToken,
+    user: toUser(data.user),
+  };
+}
 
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
@@ -8,8 +37,7 @@ export const authApi = {
       const { authMocks } = await import('./authMocks');
       return authMocks.login(credentials);
     }
-    const res = await apiClient.post<AuthResponse>('/auth/login', credentials);
-    return res.data;
+    return toAuthResponse(await auth.login(credentials));
   },
 
   registerBuyer: async (data: RegisterBuyerData): Promise<AuthResponse> => {
@@ -17,8 +45,7 @@ export const authApi = {
       const { authMocks } = await import('./authMocks');
       return authMocks.registerBuyer(data);
     }
-    const res = await apiClient.post<AuthResponse>('/auth/register/buyer', data);
-    return res.data;
+    return toAuthResponse(await auth.registerBuyer(data));
   },
 
   getProfile: async (): Promise<User> => {
@@ -26,8 +53,7 @@ export const authApi = {
       const { authMocks } = await import('./authMocks');
       return authMocks.getProfile();
     }
-    const res = await apiClient.get<User>('/users/me');
-    return res.data;
+    return toUser(await auth.getCurrentUser());
   },
 
   logout: async (): Promise<void> => {
@@ -35,6 +61,6 @@ export const authApi = {
       const { authMocks } = await import('./authMocks');
       return authMocks.logout();
     }
-    await apiClient.post('/auth/logout');
+    await auth.logout();
   },
 };
