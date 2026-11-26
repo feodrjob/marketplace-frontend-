@@ -31,3 +31,26 @@ export const registerBuyerSchema = z
   });
 
 export type RegisterBuyerFormValues = z.infer<typeof registerBuyerSchema>;
+
+export const registerSellerSchema = z
+  .object({
+    companyName: z
+      .string()
+      .trim()
+      .min(2, 'Введите название компании (не менее 2 символов)')
+      .max(120, 'Название не длиннее 120 символов'),
+    inn: z
+      .string()
+      .trim()
+      .regex(/^(\d{10}|\d{12})$/, 'ИНН должен содержать 10 или 12 цифр'),
+    email: z.string().trim().min(1, 'Введите email').email('Введите корректный email адрес'),
+    password: z.string().min(8, 'Пароль должен содержать не менее 8 символов'),
+    confirmPassword: z.string().min(1, 'Повторите пароль'),
+    description: z.string().trim().max(1000, 'Описание не длиннее 1000 символов'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Пароли не совпадают',
+    path: ['confirmPassword'],
+  });
+
+export type RegisterSellerFormValues = z.infer<typeof registerSellerSchema>;

@@ -7,6 +7,7 @@ import {
   useLogin,
   useLogout,
   useRegisterBuyer,
+  useRegisterSeller,
 } from '@/shared/api/generated/auth';
 import { getErrorMessage, getValidationErrors } from '@/shared/lib';
 
@@ -50,6 +51,29 @@ export function useRegisterBuyerMutation() {
           color: 'red',
           title: 'Ошибка регистрации',
           message: getErrorMessage(error, 'Не удалось завершить регистрацию'),
+        });
+      },
+    },
+  });
+}
+
+export function useRegisterSellerMutation() {
+  const queryClient = useQueryClient();
+
+  return useRegisterSeller({
+    mutation: {
+      onSuccess: (data) => {
+        setAccessToken(data.accessToken);
+        queryClient.setQueryData(getGetCurrentUserQueryKey(), data.user);
+      },
+      onError: (error) => {
+        if (getValidationErrors(error)) {
+          return;
+        }
+        notifications.show({
+          color: 'red',
+          title: 'Ошибка регистрации продавца',
+          message: getErrorMessage(error, 'Не удалось создать профиль продавца'),
         });
       },
     },

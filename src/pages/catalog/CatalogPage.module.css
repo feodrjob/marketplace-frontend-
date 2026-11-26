@@ -17,40 +17,15 @@
   border-radius: 4px;
 }
 
-.productCard {
-  background-color: #ffffff;
-  border: 1px solid #e9ecef;
-  border-radius: 4px;
-  display: flex;
-  flex-direction: column;
-  transition: border-color 0.15s ease;
-}
-
-.productCard:hover {
-  border-color: #cbd5e1;
-}
-
-.category {
-  font-size: 11px;
-  color: #6b7280;
-  margin-bottom: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.productTitle {
-  font-weight: 500;
-  font-size: 14px;
-  color: #111827;
-  line-height: 1.3;
-  margin-bottom: 12px;
-}
-
-.price {
-  font-weight: 600;
-  font-size: 16px;
-  color: #111827;
-  font-variant-numeric: tabular-nums;
-  margin-bottom: 14px;
-  margin-top: auto;
+.resetLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--mantine-color-anchor);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
 }

@@ -4,7 +4,8 @@ import { zod4Resolver } from 'mantine-form-zod-resolver';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { type LoginFormValues, loginSchema } from '@/entities/user';
 import { useLoginMutation } from '@/features/auth-by-email';
-import { getErrorMessage, getValidationErrors } from '@/shared/lib';
+import { ENV } from '@/shared/config';
+import { getErrorMessage, getSafeRedirect, getValidationErrors } from '@/shared/lib';
 import { AuthCardLayout } from '@/shared/ui';
 
 interface LocationState {
@@ -18,7 +19,10 @@ export function LoginPage() {
   const location = useLocation();
   const loginMutation = useLoginMutation();
 
-  const from = (location.state as LocationState | null)?.from?.pathname || '/profile';
+  const from = getSafeRedirect(
+    (location.state as LocationState | null)?.from?.pathname,
+    '/profile'
+  );
 
   const form = useForm<LoginFormValues>({
     mode: 'uncontrolled',
@@ -75,6 +79,7 @@ export function LoginPage() {
           <TextInput
             label="Email"
             type="email"
+            autoComplete="email"
             required
             placeholder="buyer@t-market.ru"
             radius="sm"
@@ -84,6 +89,7 @@ export function LoginPage() {
 
           <PasswordInput
             label="Пароль"
+            autoComplete="current-password"
             required
             placeholder="Ваш пароль"
             radius="sm"
@@ -101,6 +107,12 @@ export function LoginPage() {
           >
             Войти
           </Button>
+
+          {ENV.USE_MOCKS && (
+            <Text fz={12} c="dimmed" ta="center">
+              Демо-режим: войдите с email seller@t-market.ru, чтобы открыть кабинет продавца.
+            </Text>
+          )}
         </Stack>
       </form>
     </AuthCardLayout>

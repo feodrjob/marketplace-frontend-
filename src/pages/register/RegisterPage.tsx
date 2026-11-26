@@ -75,9 +75,14 @@ export function RegisterPage() {
         </Text>
       }
       belowCard={
-        <Text fz={12} c="dimmed" ta="center" mt="md">
-          Хотите продавать товары? Кабинет продавца настраивается отдельно.
-        </Text>
+        <Stack gap={8} mt="md">
+          <Text fz={12} c="dimmed" ta="center">
+            Хотите продавать товары?
+          </Text>
+          <Button component={Link} to="/register/seller" variant="default" radius="sm" h={44}>
+            Зарегистрироваться как продавец
+          </Button>
+        </Stack>
       }
     >
       {nonFieldError && (
@@ -90,6 +95,7 @@ export function RegisterPage() {
         <Stack gap="sm">
           <TextInput
             label="Имя и Фамилия"
+            autoComplete="name"
             required
             placeholder="Иван Иванов"
             radius="sm"
@@ -100,6 +106,7 @@ export function RegisterPage() {
           <TextInput
             label="Email"
             type="email"
+            autoComplete="email"
             required
             placeholder="buyer@t-market.ru"
             radius="sm"
@@ -110,6 +117,7 @@ export function RegisterPage() {
           <TextInput
             label="Телефон"
             type="tel"
+            autoComplete="tel"
             placeholder="+7 (999) 000-00-00"
             radius="sm"
             key={form.key('phone')}
@@ -118,6 +126,7 @@ export function RegisterPage() {
 
           <PasswordInput
             label="Пароль"
+            autoComplete="new-password"
             required
             placeholder="Не менее 8 символов"
             radius="sm"
@@ -127,6 +136,7 @@ export function RegisterPage() {
 
           <PasswordInput
             label="Повторите пароль"
+            autoComplete="new-password"
             required
             placeholder="Повтор пароля"
             radius="sm"
