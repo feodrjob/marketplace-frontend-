@@ -1,3 +1,4 @@
+import type { AxiosRequestConfig } from 'axios';
 import type {
   AuthResponse,
   LoginCredentials,
@@ -62,3 +63,34 @@ export const authMocks = {
     mockCurrentUser = null;
   },
 };
+
+function parseBody<T>(data: unknown): T {
+  return (typeof data === 'string' ? JSON.parse(data) : data) as T;
+}
+
+/**
+ * Отвечает на запросы сгенерированных Orval-хуков, пока включены моки.
+ * Живёт только в dev: модуль подгружается динамически из main.tsx.
+ */
+export async function respondToAuthMock(config: AxiosRequestConfig): Promise<unknown> {
+  const url = config.url ?? '';
+  const method = (config.method ?? 'get').toUpperCase();
+
+  if (method === 'POST' && url === '/api/v1/auth/login') {
+    return authMocks.login(parseBody<LoginCredentials>(config.data));
+  }
+  if (method === 'POST' && url === '/api/v1/auth/register/buyer') {
+    return authMocks.registerBuyer(parseBody<RegisterBuyerData>(config.data));
+  }
+  if (method === 'POST' && url === '/api/v1/auth/refresh') {
+    return { accessToken: `mock_jwt_token_${Date.now()}` };
+  }
+  if (method === 'GET' && url === '/api/v1/users/me') {
+    return authMocks.getProfile();
+  }
+  if (method === 'POST' && url === '/api/v1/auth/logout') {
+    return authMocks.logout();
+  }
+
+  throw new Error(`Нет мока для ${method} ${url}`);
+}
