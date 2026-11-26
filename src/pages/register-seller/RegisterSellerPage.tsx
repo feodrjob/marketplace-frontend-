@@ -36,11 +36,13 @@ export function RegisterSellerPage() {
   const handleSubmit = form.onSubmit((values) => {
     registerMutation.mutate(
       {
-        companyName: values.companyName.trim(),
-        inn: values.inn.trim(),
-        email: values.email.trim(),
-        password: values.password,
-        description: values.description.trim() || undefined,
+        data: {
+          companyName: values.companyName.trim(),
+          inn: values.inn.trim(),
+          email: values.email.trim(),
+          password: values.password,
+          description: values.description.trim() || undefined,
+        },
       },
       {
         onSuccess: () => {

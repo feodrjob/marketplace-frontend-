@@ -34,17 +34,20 @@ export function LoginPage() {
   });
 
   const handleSubmit = form.onSubmit((values) => {
-    loginMutation.mutate(values, {
-      onSuccess: () => {
-        navigate(from, { replace: true });
-      },
-      onError: (error) => {
-        const details = getValidationErrors(error);
-        if (details) {
-          form.setErrors(details);
-        }
-      },
-    });
+    loginMutation.mutate(
+      { data: values },
+      {
+        onSuccess: () => {
+          navigate(from, { replace: true });
+        },
+        onError: (error) => {
+          const details = getValidationErrors(error);
+          if (details) {
+            form.setErrors(details);
+          }
+        },
+      }
+    );
   });
 
   const nonFieldError =

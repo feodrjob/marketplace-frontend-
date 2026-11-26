@@ -12,6 +12,7 @@
     "format": "biome format --write ./src",
     "check": "biome check ./src && tsc --noEmit",
     "check:fix": "biome check --write ./src",
+    "gen:api": "orval --config orval.config.ts",
     "prepare": "simple-git-hooks"
   },
   "simple-git-hooks": {
@@ -36,6 +37,7 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "orval": "8.49.0",
     "simple-git-hooks": "2.14.0",
     "typescript": "^5.7.2",
     "vite": "^6.0.1"

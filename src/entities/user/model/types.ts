@@ -1,50 +1,27 @@
-export type UserRole = 'BUYER' | 'SELLER' | 'ADMIN';
+import type {
+  AuthResponse as GeneratedAuthResponse,
+  UserProfile as GeneratedUserProfile,
+  LoginRequest,
+  RegisterBuyerRequest,
+  RegisterSellerRequest,
+  UserProfileRole,
+} from '@/shared/api/generated/auth';
 
-/**
- * Профиль из Auth Service (GET /api/v1/users/me).
- * Повторяет UserProfile из auth.yaml: один аккаунт — одна роль.
- */
-export interface UserProfile {
-  id: string;
-  email: string;
-  role: UserRole;
-  fullName?: string;
-  phone?: string;
-  companyName?: string | null;
-  inn?: string;
-  description?: string;
-  department?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+export type UserRole = UserProfileRole;
 
-// UI-код использует короткое имя User
-export type User = UserProfile;
+/** Профиль из Auth Service, тип приходит из сгенерированного OpenAPI-клиента. */
+export type UserProfile = GeneratedUserProfile;
 
-export interface LoginCredentials {
-  email: string;
-  password: string;
-}
+/** UI-код использует короткое имя User. */
+export type User = GeneratedUserProfile;
 
-export interface RegisterBuyerData {
-  email: string;
-  password: string;
-  fullName?: string;
-  phone?: string;
-}
+export type LoginCredentials = LoginRequest;
 
-export interface RegisterSellerData {
-  email: string;
-  password: string;
-  companyName: string;
-  inn: string;
-  description?: string;
-}
+export type RegisterBuyerData = RegisterBuyerRequest;
 
-export interface AuthResponse {
-  accessToken: string;
-  user: UserProfile;
-}
+export type RegisterSellerData = RegisterSellerRequest;
+
+export type AuthResponse = GeneratedAuthResponse;
 
 export interface AuthContextType {
   user: User | null;

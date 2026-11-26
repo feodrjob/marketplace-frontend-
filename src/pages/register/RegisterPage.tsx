@@ -36,10 +36,12 @@ export function RegisterPage() {
   const handleSubmit = form.onSubmit((values) => {
     registerMutation.mutate(
       {
-        fullName: values.fullName.trim(),
-        email: values.email.trim(),
-        phone: values.phone?.trim() || undefined,
-        password: values.password,
+        data: {
+          fullName: values.fullName.trim(),
+          email: values.email.trim(),
+          phone: values.phone?.trim() || undefined,
+          password: values.password,
+        },
       },
       {
         onSuccess: () => {
