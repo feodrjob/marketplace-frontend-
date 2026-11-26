@@ -7,7 +7,8 @@ export default defineConfig({
     },
     output: {
       target: './src/shared/api/generated/auth.ts',
-      client: 'axios',
+      client: 'react-query',
+      httpClient: 'axios',
       mode: 'single',
       override: {
         mutator: {

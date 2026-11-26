@@ -20,6 +20,25 @@
  *
  * OpenAPI spec version: 1.0.0
  */
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
+import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
+  MutationFunction,
+  QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult
+} from '@tanstack/react-query';
+
 import { orvalClient } from '../orvalClient';
 /**
  * При поиске и сохранении сервер убирает внешние пробелы и приводит email к нижнему регистру.
@@ -210,20 +229,90 @@ export type CurrentProfileResponse = UserProfile;
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
-  export const getAuthService = () => {
+
+const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKey: K } => {
+  const result = { queryKey } as T & { queryKey: K };
+  for (const key of Object.keys(query)) {
+    // The explicit queryKey always wins, matching the previous
+    // `{ ...query, queryKey }` spread where it was set last.
+    if (key === 'queryKey') continue;
+    Object.defineProperty(result, key, {
+      enumerable: true,
+      configurable: true,
+      get: () => (query as Record<string, unknown>)[key],
+    });
+  }
+  return result;
+};
+
 /**
  * Публичная операция. Создаёт аккаунт BUYER и открывает сессию.
  * @summary Зарегистрировать покупателя
  */
-const registerBuyer = (
+export const registerBuyer = (
     registerBuyerRequest: RegisterBuyerRequest,
- options?: SecondParameter<typeof orvalClient<AuthResponse>>,) => {
+ options?: SecondParameter<typeof orvalClient>,signal?: AbortSignal
+) => {
+
+
       return orvalClient<AuthResponse>(
       {url: `/api/v1/auth/register/buyer`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: registerBuyerRequest
+      data: registerBuyerRequest, signal
     },
       options);
+    }
+
+
+
+
+export const getRegisterBuyerMutationKey = () => ['registerBuyer'] as const;
+
+export const getRegisterBuyerMutationOptions = <TError = MalformedJsonResponse | EmailConflictResponse | FieldValidationResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerBuyer>>, TError,RegisterBuyerMutationVariables, TContext>, request?: SecondParameter<typeof orvalClient>}
+): UseMutationOptions<Awaited<ReturnType<typeof registerBuyer>>, TError,RegisterBuyerMutationVariables, TContext> => {
+
+const mutationKey = getRegisterBuyerMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof registerBuyer>>, RegisterBuyerMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  registerBuyer(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RegisterBuyerMutationResult = NonNullable<Awaited<ReturnType<typeof registerBuyer>>>
+    export type RegisterBuyerMutationBody = RegisterBuyerRequest
+    export type RegisterBuyerMutationError = MalformedJsonResponse | EmailConflictResponse | FieldValidationResponse
+    export type RegisterBuyerMutationVariables = {data: RegisterBuyerRequest}
+
+    /**
+ * Публичная операция. Создаёт аккаунт BUYER и открывает сессию.
+ * @summary Зарегистрировать покупателя
+ */
+export const useRegisterBuyer = <TError = MalformedJsonResponse | EmailConflictResponse | FieldValidationResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerBuyer>>, TError,RegisterBuyerMutationVariables, TContext>, request?: SecondParameter<typeof orvalClient>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof registerBuyer>>,
+        TError,
+        RegisterBuyerMutationVariables,
+        TContext
+      > => {
+      return useMutation(getRegisterBuyerMutationOptions(options), queryClient);
     }
 
 /**
@@ -231,30 +320,141 @@ const registerBuyer = (
  * сразу после успешной регистрации. ИНН задаётся при регистрации.
  * @summary Зарегистрировать продавца
  */
-const registerSeller = (
+export const registerSeller = (
     registerSellerRequest: RegisterSellerRequest,
- options?: SecondParameter<typeof orvalClient<AuthResponse>>,) => {
+ options?: SecondParameter<typeof orvalClient>,signal?: AbortSignal
+) => {
+
+
       return orvalClient<AuthResponse>(
       {url: `/api/v1/auth/register/seller`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: registerSellerRequest
+      data: registerSellerRequest, signal
     },
       options);
+    }
+
+
+
+
+export const getRegisterSellerMutationKey = () => ['registerSeller'] as const;
+
+export const getRegisterSellerMutationOptions = <TError = MalformedJsonResponse | Problem | ValidationProblem,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerSeller>>, TError,RegisterSellerMutationVariables, TContext>, request?: SecondParameter<typeof orvalClient>}
+): UseMutationOptions<Awaited<ReturnType<typeof registerSeller>>, TError,RegisterSellerMutationVariables, TContext> => {
+
+const mutationKey = getRegisterSellerMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof registerSeller>>, RegisterSellerMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  registerSeller(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RegisterSellerMutationResult = NonNullable<Awaited<ReturnType<typeof registerSeller>>>
+    export type RegisterSellerMutationBody = RegisterSellerRequest
+    export type RegisterSellerMutationError = MalformedJsonResponse | Problem | ValidationProblem
+    export type RegisterSellerMutationVariables = {data: RegisterSellerRequest}
+
+    /**
+ * Публичная операция. Создаёт активный аккаунт SELLER и открывает сессию
+ * сразу после успешной регистрации. ИНН задаётся при регистрации.
+ * @summary Зарегистрировать продавца
+ */
+export const useRegisterSeller = <TError = MalformedJsonResponse | Problem | ValidationProblem,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerSeller>>, TError,RegisterSellerMutationVariables, TContext>, request?: SecondParameter<typeof orvalClient>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof registerSeller>>,
+        TError,
+        RegisterSellerMutationVariables,
+        TContext
+      > => {
+      return useMutation(getRegisterSellerMutationOptions(options), queryClient);
     }
 
 /**
  * Публичная операция для аккаунтов BUYER, SELLER и ADMIN.
  * @summary Войти по email и паролю
  */
-const login = (
+export const login = (
     loginRequest: LoginRequest,
- options?: SecondParameter<typeof orvalClient<AuthResponse>>,) => {
+ options?: SecondParameter<typeof orvalClient>,signal?: AbortSignal
+) => {
+
+
       return orvalClient<AuthResponse>(
       {url: `/api/v1/auth/login`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: loginRequest
+      data: loginRequest, signal
     },
       options);
+    }
+
+
+
+
+export const getLoginMutationKey = () => ['login'] as const;
+
+export const getLoginMutationOptions = <TError = MalformedJsonResponse | Problem | FieldValidationResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,LoginMutationVariables, TContext>, request?: SecondParameter<typeof orvalClient>}
+): UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,LoginMutationVariables, TContext> => {
+
+const mutationKey = getLoginMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof login>>, LoginMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  login(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type LoginMutationResult = NonNullable<Awaited<ReturnType<typeof login>>>
+    export type LoginMutationBody = LoginRequest
+    export type LoginMutationError = MalformedJsonResponse | Problem | FieldValidationResponse
+    export type LoginMutationVariables = {data: LoginRequest}
+
+    /**
+ * Публичная операция для аккаунтов BUYER, SELLER и ADMIN.
+ * @summary Войти по email и паролю
+ */
+export const useLogin = <TError = MalformedJsonResponse | Problem | FieldValidationResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,LoginMutationVariables, TContext>, request?: SecondParameter<typeof orvalClient>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof login>>,
+        TError,
+        LoginMutationVariables,
+        TContext
+      > => {
+      return useMutation(getLoginMutationOptions(options), queryClient);
     }
 
 /**
@@ -263,13 +463,70 @@ const login = (
  * Действующий access JWT для обновления сессии не требуется.
  * @summary Обновить сессию по refresh-cookie
  */
-const refreshSession = (
+export const refreshSession = (
 
- options?: SecondParameter<typeof orvalClient<AccessTokenResponse>>,) => {
+ options?: SecondParameter<typeof orvalClient>,signal?: AbortSignal
+) => {
+
+
       return orvalClient<AccessTokenResponse>(
-      {url: `/api/v1/auth/refresh`, method: 'POST'
+      {url: `/api/v1/auth/refresh`, method: 'POST', signal
     },
       options);
+    }
+
+
+
+
+export const getRefreshSessionMutationKey = () => ['refreshSession'] as const;
+
+export const getRefreshSessionMutationOptions = <TError = Problem,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof refreshSession>>, TError,void, TContext>, request?: SecondParameter<typeof orvalClient>}
+): UseMutationOptions<Awaited<ReturnType<typeof refreshSession>>, TError,void, TContext> => {
+
+const mutationKey = getRefreshSessionMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof refreshSession>>, void> = () => {
+
+
+          return  refreshSession(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RefreshSessionMutationResult = NonNullable<Awaited<ReturnType<typeof refreshSession>>>
+
+    export type RefreshSessionMutationError = Problem
+
+
+    /**
+ * Браузер передаёт Cookie: refreshToken=<refresh JWT>. Тело запроса
+ * отсутствует либо содержит пустой JSON-объект, который отправляет Axios.
+ * Действующий access JWT для обновления сессии не требуется.
+ * @summary Обновить сессию по refresh-cookie
+ */
+export const useRefreshSession = <TError = Problem,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof refreshSession>>, TError,void, TContext>, request?: SecondParameter<typeof orvalClient>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof refreshSession>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getRefreshSessionMutationOptions(options), queryClient);
     }
 
 /**
@@ -277,13 +534,69 @@ const refreshSession = (
  * Тело запроса и наличие refresh-cookie не требуются.
  * @summary Выйти из сессии
  */
-const logout = (
+export const logout = (
 
- options?: SecondParameter<typeof orvalClient<void>>,) => {
+ options?: SecondParameter<typeof orvalClient>,signal?: AbortSignal
+) => {
+
+
       return orvalClient<void>(
-      {url: `/api/v1/auth/logout`, method: 'POST'
+      {url: `/api/v1/auth/logout`, method: 'POST', signal
     },
       options);
+    }
+
+
+
+
+export const getLogoutMutationKey = () => ['logout'] as const;
+
+export const getLogoutMutationOptions = <TError = AccessUnauthorizedResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext>, request?: SecondParameter<typeof orvalClient>}
+): UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext> => {
+
+const mutationKey = getLogoutMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof logout>>, void> = () => {
+
+
+          return  logout(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type LogoutMutationResult = NonNullable<Awaited<ReturnType<typeof logout>>>
+
+    export type LogoutMutationError = AccessUnauthorizedResponse
+
+
+    /**
+ * Проверяет access JWT и отправляет заголовок для очистки refresh-cookie.
+ * Тело запроса и наличие refresh-cookie не требуются.
+ * @summary Выйти из сессии
+ */
+export const useLogout = <TError = AccessUnauthorizedResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext>, request?: SecondParameter<typeof orvalClient>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof logout>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getLogoutMutationOptions(options), queryClient);
     }
 
 /**
@@ -292,27 +605,221 @@ const logout = (
  * Возвращает только sellerId, companyName и description.
  * @summary Получить публичные данные магазина
  */
-const getSellerShop = (
+export const getSellerShop = (
     sellerId: string,
- options?: SecondParameter<typeof orvalClient<SellerShopResponse>>,) => {
+ options?: SecondParameter<typeof orvalClient>,signal?: AbortSignal
+) => {
+
+
       return orvalClient<SellerShopResponse>(
-      {url: `/api/v1/sellers/${sellerId}/shop`, method: 'GET'
+      {url: `/api/v1/sellers/${sellerId}/shop`, method: 'GET', signal
     },
       options);
     }
+
+
+
+
+export const getGetSellerShopQueryKey = (sellerId: string,) => {
+    return [
+    `/api/v1/sellers/${sellerId}/shop`
+    ] as const;
+    }
+
+
+export const getGetSellerShopQueryOptions = <TData = Awaited<ReturnType<typeof getSellerShop>>, TError = Problem>(sellerId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSellerShop>>, TError, TData>>, request?: SecondParameter<typeof orvalClient>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSellerShopQueryKey(sellerId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSellerShop>>> = ({ signal }) => getSellerShop(sellerId, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: sellerId !== null && sellerId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSellerShop>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSellerShopQueryResult = NonNullable<Awaited<ReturnType<typeof getSellerShop>>>
+export type GetSellerShopQueryError = Problem
+
+
+/**
+ * Публичная операция для витрины Catalog. sellerId — UUID аккаунта
+ * продавца из auth.users, совпадающий с sub его JWT.
+ * Возвращает только sellerId, companyName и description.
+ * @summary Получить публичные данные магазина
+ */
+export function useGetSellerShop<TData = Awaited<ReturnType<typeof getSellerShop>>, TError = Problem>(
+ sellerId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSellerShop>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSellerShop>>,
+          TError,
+          Awaited<ReturnType<typeof getSellerShop>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalClient>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * Публичная операция для витрины Catalog. sellerId — UUID аккаунта
+ * продавца из auth.users, совпадающий с sub его JWT.
+ * Возвращает только sellerId, companyName и description.
+ * @summary Получить публичные данные магазина
+ */
+export function useGetSellerShop<TData = Awaited<ReturnType<typeof getSellerShop>>, TError = Problem>(
+ sellerId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSellerShop>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSellerShop>>,
+          TError,
+          Awaited<ReturnType<typeof getSellerShop>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalClient>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * Публичная операция для витрины Catalog. sellerId — UUID аккаунта
+ * продавца из auth.users, совпадающий с sub его JWT.
+ * Возвращает только sellerId, companyName и description.
+ * @summary Получить публичные данные магазина
+ */
+export function useGetSellerShop<TData = Awaited<ReturnType<typeof getSellerShop>>, TError = Problem>(
+ sellerId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSellerShop>>, TError, TData>>, request?: SecondParameter<typeof orvalClient>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * Публичная операция для витрины Catalog. sellerId — UUID аккаунта
+ * продавца из auth.users, совпадающий с sub его JWT.
+ * Возвращает только sellerId, companyName и description.
+ * @summary Получить публичные данные магазина
+ */
+export function useGetSellerShop<TData = Awaited<ReturnType<typeof getSellerShop>>, TError = Problem>(
+ sellerId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSellerShop>>, TError, TData>>, request?: SecondParameter<typeof orvalClient>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSellerShopQueryOptions(sellerId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 
 /**
  * Доступен аккаунтам BUYER, SELLER и ADMIN с действующим access JWT.
  * @summary Получить собственный профиль
  */
-const getCurrentUser = (
+export const getCurrentUser = (
 
- options?: SecondParameter<typeof orvalClient<CurrentProfileResponse>>,) => {
+ options?: SecondParameter<typeof orvalClient>,signal?: AbortSignal
+) => {
+
+
       return orvalClient<CurrentProfileResponse>(
-      {url: `/api/v1/users/me`, method: 'GET'
+      {url: `/api/v1/users/me`, method: 'GET', signal
     },
       options);
     }
+
+
+
+
+export const getGetCurrentUserQueryKey = () => {
+    return [
+    `/api/v1/users/me`
+    ] as const;
+    }
+
+
+export const getGetCurrentUserQueryOptions = <TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = AccessUnauthorizedResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof orvalClient>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentUserQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentUser>>> = ({ signal }) => getCurrentUser(requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentUserQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>
+export type GetCurrentUserQueryError = AccessUnauthorizedResponse
+
+
+/**
+ * Доступен аккаунтам BUYER, SELLER и ADMIN с действующим access JWT.
+ * @summary Получить собственный профиль
+ */
+export function useGetCurrentUser<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = AccessUnauthorizedResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentUser>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentUser>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalClient>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * Доступен аккаунтам BUYER, SELLER и ADMIN с действующим access JWT.
+ * @summary Получить собственный профиль
+ */
+export function useGetCurrentUser<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = AccessUnauthorizedResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentUser>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentUser>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalClient>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * Доступен аккаунтам BUYER, SELLER и ADMIN с действующим access JWT.
+ * @summary Получить собственный профиль
+ */
+export function useGetCurrentUser<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = AccessUnauthorizedResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof orvalClient>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * Доступен аккаунтам BUYER, SELLER и ADMIN с действующим access JWT.
+ * @summary Получить собственный профиль
+ */
+export function useGetCurrentUser<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = AccessUnauthorizedResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof orvalClient>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentUserQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 
 /**
  * BUYER может изменить fullName и phone. SELLER может изменить companyName
@@ -323,23 +830,73 @@ const getCurrentUser = (
  * companyName должно остаться непустым.
  * @summary Обновить собственный профиль
  */
-const updateCurrentUser = (
+export const updateCurrentUser = (
     updateProfileRequest: UpdateProfileRequest,
- options?: SecondParameter<typeof orvalClient<CurrentProfileResponse>>,) => {
+ options?: SecondParameter<typeof orvalClient>,signal?: AbortSignal
+) => {
+
+
       return orvalClient<CurrentProfileResponse>(
       {url: `/api/v1/users/me`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: updateProfileRequest
+      data: updateProfileRequest, signal
     },
       options);
     }
 
-return {registerBuyer,registerSeller,login,refreshSession,logout,getSellerShop,getCurrentUser,updateCurrentUser}};
-export type RegisterBuyerResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAuthService>['registerBuyer']>>>
-export type RegisterSellerResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAuthService>['registerSeller']>>>
-export type LoginResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAuthService>['login']>>>
-export type RefreshSessionResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAuthService>['refreshSession']>>>
-export type LogoutResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAuthService>['logout']>>>
-export type GetSellerShopResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAuthService>['getSellerShop']>>>
-export type GetCurrentUserResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAuthService>['getCurrentUser']>>>
-export type UpdateCurrentUserResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAuthService>['updateCurrentUser']>>>
+
+
+
+export const getUpdateCurrentUserMutationKey = () => ['updateCurrentUser'] as const;
+
+export const getUpdateCurrentUserMutationOptions = <TError = MalformedJsonResponse | AccessUnauthorizedResponse | ValidationProblem,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCurrentUser>>, TError,UpdateCurrentUserMutationVariables, TContext>, request?: SecondParameter<typeof orvalClient>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateCurrentUser>>, TError,UpdateCurrentUserMutationVariables, TContext> => {
+
+const mutationKey = getUpdateCurrentUserMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateCurrentUser>>, UpdateCurrentUserMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  updateCurrentUser(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateCurrentUserMutationResult = NonNullable<Awaited<ReturnType<typeof updateCurrentUser>>>
+    export type UpdateCurrentUserMutationBody = UpdateProfileRequest
+    export type UpdateCurrentUserMutationError = MalformedJsonResponse | AccessUnauthorizedResponse | ValidationProblem
+    export type UpdateCurrentUserMutationVariables = {data: UpdateProfileRequest}
+
+    /**
+ * BUYER может изменить fullName и phone. SELLER может изменить companyName
+ * и description. ADMIN не имеет редактируемых полей. ИНН, email, роль,
+ * идентификатор, служебные даты и баланс через этот маршрут не меняются.
+ * Пропущенные поля сохраняются, пустой объект оставляет профиль без изменений.
+ * null или пробельная строка очищают fullName, phone и description.
+ * companyName должно остаться непустым.
+ * @summary Обновить собственный профиль
+ */
+export const useUpdateCurrentUser = <TError = MalformedJsonResponse | AccessUnauthorizedResponse | ValidationProblem,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCurrentUser>>, TError,UpdateCurrentUserMutationVariables, TContext>, request?: SecondParameter<typeof orvalClient>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateCurrentUser>>,
+        TError,
+        UpdateCurrentUserMutationVariables,
+        TContext
+      > => {
+      return useMutation(getUpdateCurrentUserMutationOptions(options), queryClient);
+    }

@@ -1,4 +1,3 @@
-export { authApi } from './api/authApi';
 export { AuthProvider, useAuth } from './model/AuthContext';
 export type { LoginFormValues, RegisterBuyerFormValues } from './model/schemas';
 export { loginSchema, registerBuyerSchema } from './model/schemas';
@@ -11,4 +10,4 @@ export type {
   UserProfile,
   UserRole,
 } from './model/types';
-export { AUTH_QUERY_KEYS, useCurrentUserQuery } from './model/useAuthQueries';
+export { useCurrentUserQuery } from './model/useAuthQueries';
