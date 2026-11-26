@@ -1,6 +1,6 @@
 import { Alert, Anchor, Button, PasswordInput, Stack, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { zodResolver } from 'mantine-form-zod-resolver';
+import { zod4Resolver } from 'mantine-form-zod-resolver';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { type LoginFormValues, loginSchema } from '@/entities/user';
 import { useLoginMutation } from '@/features/auth-by-email';
@@ -26,7 +26,7 @@ export function LoginPage() {
       email: '',
       password: '',
     },
-    validate: zodResolver(loginSchema),
+    validate: zod4Resolver(loginSchema),
   });
 
   const handleSubmit = form.onSubmit((values) => {
