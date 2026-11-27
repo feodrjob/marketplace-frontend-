@@ -1,5 +1,10 @@
-import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
-import { productApi } from '../api/productApi';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import {
+  getListCatalogProductsQueryKey,
+  type ListCatalogProductsParams,
+  type ListCatalogProductsSort,
+  listCatalogProducts,
+} from '@/shared/api/generated/catalog';
 import type { ProductFilters, ProductListResponse } from './types';
 
 export const PRODUCT_QUERY_KEYS = {
@@ -10,13 +15,41 @@ export const PRODUCT_QUERY_KEYS = {
 
 const PAGE_SIZE = 20;
 
-export function useProductsQuery(filters: ProductFilters) {
+function toParams(filters: ProductFilters, size: number): ListCatalogProductsParams {
+  const params: ListCatalogProductsParams = { size };
+
+  if (filters.q) {
+    params.q = filters.q;
+  }
+  if (filters.sort) {
+    params.sort = filters.sort as ListCatalogProductsSort;
+  }
+  if (filters.category !== 'all') {
+    params['f[category]'] = filters.category;
+  }
+
+  const priceMin = filters.priceMin.trim();
+  const priceMax = filters.priceMax.trim();
+  if (priceMin || priceMax) {
+    // Бэкенд принимает только пару min,max, оба значения обязательны.
+    params['f[price]'] = `${priceMin || '0'},${priceMax || '999999999'}`;
+  }
+
+  return params;
+}
+
+export function useProductsQuery(filters: ProductFilters, enabled = true) {
+  const params = toParams(filters, PAGE_SIZE);
+
   return useInfiniteQuery({
-    queryKey: PRODUCT_QUERY_KEYS.list(filters),
-    queryFn: ({ pageParam, signal }) => productApi.list(filters, pageParam, PAGE_SIZE, signal),
-    initialPageParam: null as string | null,
-    getNextPageParam: (lastPage: ProductListResponse) =>
-      lastPage.hasMore ? lastPage.nextCursor : undefined,
-    placeholderData: keepPreviousData,
+    queryKey: getListCatalogProductsQueryKey(params),
+    queryFn: ({ pageParam, signal }) =>
+      listCatalogProducts({ ...params, page: pageParam }, undefined, signal),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage: ProductListResponse) => {
+      const loaded = (lastPage.page + 1) * lastPage.size;
+      return loaded < lastPage.total ? lastPage.page + 1 : undefined;
+    },
+    enabled,
   });
 }

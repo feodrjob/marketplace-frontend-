@@ -10,8 +10,6 @@ export type {
   ProductFilters,
   ProductImage,
   ProductListResponse,
-  ProductSeller,
-  ProductStatus,
 } from './model/types';
 export { useCreateProductMutation } from './model/useCreateProductMutation';
 export { useProductQuery } from './model/useProductQuery';

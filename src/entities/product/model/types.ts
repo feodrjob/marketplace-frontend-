@@ -1,41 +1,21 @@
-export type ProductStatus = 'ACTIVE' | 'HIDDEN' | 'ARCHIVED';
+import type {
+  ProductImageResponse,
+  ProductPageResponse,
+  ProductResponse,
+} from '@/shared/api/generated/catalog';
 
-export interface ProductImage {
-  id: string;
-  url?: string;
-  sortOrder: number;
-}
+export type Product = ProductResponse;
 
-export interface ProductSeller {
-  id: string;
-  companyName?: string | null;
-}
+export type ProductImage = ProductImageResponse;
 
-export interface Product {
-  id: string;
-  title: string;
-  category: string;
-  description?: string;
-  price: number;
-  status: ProductStatus;
-  images: ProductImage[];
-  seller: ProductSeller;
-  createdAt: string;
-  updatedAt: string;
-}
+export type ProductListResponse = ProductPageResponse;
 
 export interface ProductFilters {
+  q: string;
   category: string;
   priceMin: string;
   priceMax: string;
   sort: string;
-}
-
-export interface ProductListResponse {
-  items: Product[];
-  nextCursor: string | null;
-  hasMore: boolean;
-  total: number;
 }
 
 export interface CreateProductData {

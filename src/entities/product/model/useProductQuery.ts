@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { productApi } from '../api/productApi';
+import { getCatalogProduct, getGetCatalogProductQueryKey } from '@/shared/api/generated/catalog';
 import type { Product } from './types';
-import { PRODUCT_QUERY_KEYS } from './useProductsQuery';
 
 export function useProductQuery(id: string | undefined) {
   return useQuery<Product>({
-    queryKey: PRODUCT_QUERY_KEYS.detail(id ?? ''),
-    queryFn: ({ signal }) => productApi.detail(id as string, signal),
+    queryKey: getGetCatalogProductQueryKey(id ?? ''),
+    queryFn: ({ signal }) => getCatalogProduct(id as string, undefined, signal),
     enabled: Boolean(id),
     retry: false,
     // Страница товара показывает ошибку сама (404, нет сети, 5xx),

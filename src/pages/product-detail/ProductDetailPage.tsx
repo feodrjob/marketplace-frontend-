@@ -1,6 +1,6 @@
 import { Anchor, Button, Divider, Group, Paper, Skeleton, Stack, Text, Title } from '@mantine/core';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { getProductCategoryLabel, useProductQuery } from '@/entities/product';
+import { useProductQuery } from '@/entities/product';
 import { Formatter, getErrorMessage } from '@/shared/lib';
 import classes from './ProductDetailPage.module.css';
 
@@ -69,7 +69,7 @@ export function ProductDetailPage() {
     );
   }
 
-  const sellerName = product.seller.companyName ?? 'Магазин';
+  const sellerName = product.companyName ?? 'Магазин';
 
   return (
     <Stack gap={20}>
@@ -81,7 +81,7 @@ export function ProductDetailPage() {
         </div>
 
         <div>
-          <Text className={classes.category}>{getProductCategoryLabel(product.category)}</Text>
+          <Text className={classes.category}>{product.categoryName}</Text>
           <Title order={1} className={classes.title}>
             {product.title}
           </Title>
