@@ -1,0 +1,440 @@
+openapi: 3.1.0
+info:
+  title: ╨в-╨Ь╨░╤А╨║╨╡╤В тАФ Catalog Service
+  description: '╨Ъ╨╛╨╜╤В╤А╨░╨║╤В ╤А╨╡╨░╨╗╨╕╨╖╨╛╨▓╨░╨╜╨╜╨╛╨╣ ╨┐╤Г╨▒╨╗╨╕╤З╨╜╨╛╨╣ ╨▓╨╕╤В╤А╨╕╨╜╤Л US-2.1 ╨╕ US-2.2. ╨Т╤Б╨╡ ╨╛╨┐╨╡╤А╨░╤Ж╨╕╨╕ ╨┤╨╛╤Б╤В╤Г╨┐╨╜╤Л ╨▒╨╡╨╖ JWT. ╨ж╨╡╨╜╨░ ╤Г╨║╨░╨╖╨░╨╜╨░
+    ╨▓ ╤Ж╨╡╨╗╤Л╤Е ╨▒╨╛╨╜╤Г╤Б╨░╤Е. ╨Я╨╛╨╕╤Б╨║ ╨▓╤Л╨┐╨╛╨╗╨╜╤П╨╡╤В╤Б╤П ╨▓ Elasticsearch, ╨║╨░╤А╤В╨╛╤З╨║╨╕ ╤З╨╕╤В╨░╤О╤В╤Б╤П ╨╕╨╖ PostgreSQL. ╨г╤Б╤В╨░╤А╨╡╨▓╤И╨╕╨╣ ╨╕╨╜╨┤╨╡╨║╤Б ╨╝╨╛╨╢╨╡╤В
+    ╤Б╨╛╨┤╨╡╤А╨╢╨░╤В╤М ╤Г╨╢╨╡ ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╜╤Л╨╡ ╤В╨╛╨▓╨░╤А╤Л: ╨╛╨╜╨╕ ╨╕╤Б╨║╨╗╤О╤З╨░╤О╤В╤Б╤П ╨╕╨╖ ╨║╨░╤А╤В╨╛╤З╨╡╨║, ╨╜╨╛ ╨╝╨╛╨│╤Г╤В ╨╛╤Б╤В╨░╨▓╨░╤В╤М╤Б╤П ╨▓ total. ╨г╨┐╤А╨░╨▓╨╗╨╡╨╜╨╕╨╡ ╨░╤Б╤Б╨╛╤А╤В╨╕╨╝╨╡╨╜╤В╨╛╨╝
+    ╨╕ ╨╖╨░╨│╤А╤Г╨╖╨║╨░ ╨╕╨╖╨╛╨▒╤А╨░╨╢╨╡╨╜╨╕╨╣ ╨▓ ╤Н╤В╨╛╤В ╨║╨╛╨╜╤В╤А╨░╨║╤В ╨╜╨╡ ╨▓╤Е╨╛╨┤╤П╤В.'
+  version: 1.0.0
+servers:
+- url: /
+  description: ╨в╨╡╨║╤Г╤Й╨╕╨╣ origin, ╨┐╨╛╤А╤В Catalog ╨┐╨╛ ╤Г╨╝╨╛╨╗╤З╨░╨╜╨╕╤О 8083
+tags:
+- name: Categories
+  description: ╨Я╤Г╨▒╨╗╨╕╤З╨╜╤Л╨╡ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕ ╨▓╨╕╤В╤А╨╕╨╜╤Л
+- name: Products
+  description: ╨Я╤Г╨▒╨╗╨╕╤З╨╜╤Л╨╣ ╨┐╨╛╨╕╤Б╨║ ╨╕ ╨║╨░╤А╤В╨╛╤З╨║╨╕ ╤В╨╛╨▓╨░╤А╨╛╨▓
+paths:
+  /api/v1/catalog/products:
+    get:
+      tags:
+      - Products
+      summary: ╨Э╨░╨╣╤В╨╕ ╤В╨╛╨▓╨░╤А╤Л ╨┐╤Г╨▒╨╗╨╕╤З╨╜╨╛╨╣ ╨▓╨╕╤В╤А╨╕╨╜╤Л
+      description: ╨Т╨╛╨╖╨▓╤А╨░╤Й╨░╨╡╤В ╤В╨╛╨╗╤М╨║╨╛ ACTIVE ╤В╨╛╨▓╨░╤А╤Л ╨▓ ╨░╨║╤В╨╕╨▓╨╜╨╛╨╣ ╨▓╨╡╤В╨║╨╡ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╣. ╨а╨░╨╖╨╜╤Л╨╡ ╤Д╨╕╨╗╤М╤В╤А╤Л ╨╛╨▒╤К╨╡╨┤╨╕╨╜╤П╤О╤В╤Б╤П ╤З╨╡╤А╨╡╨╖
+        AND, ╨╖╨╜╨░╤З╨╡╨╜╨╕╤П ╨╛╨┤╨╜╨╛╨│╨╛ ╤Д╨╕╨╗╤М╤В╤А╨░ ╤З╨╡╤А╨╡╨╖ OR. ╨Т╤Б╨╡ ╨┐╨░╤А╨░╨╝╨╡╤В╤А╤Л ╨┐╨╡╤А╨╡╨┤╨░╤О╤В╤Б╤П ╨╜╨╡ ╨▒╨╛╨╗╨╡╨╡ ╨╛╨┤╨╜╨╛╨│╨╛ ╤А╨░╨╖╨░. ╨Э╨╡╨╕╨╖╨▓╨╡╤Б╤В╨╜╤Л╨╡ ╨┐╨░╤А╨░╨╝╨╡╤В╤А╤Л
+        ╨╛╤В╨║╨╗╨╛╨╜╤П╤О╤В╤Б╤П ╤Б 400. ╨Ю╤В╤А╨╕╤Ж╨░╨╜╨╕╨╡ ╤Ж╨╡╨╜╤Л ╨╜╨╡ ╨┐╨╛╨┤╨┤╨╡╤А╨╢╨╕╨▓╨░╨╡╤В╤Б╤П. ╨Ф╨╗╤П ╨╛╤В╤А╨╕╤Ж╨░╨╜╨╕╤П ╨╕╨╝╤П ╨┐╨░╤А╨░╨╝╨╡╤В╤А╨░ ╨╖╨░╨║╨░╨╜╤З╨╕╨▓╨░╨╡╤В╤Б╤П ╨╜╨░ !, ╨╜╨░╨┐╤А╨╕╨╝╨╡╤А
+        f[sellerId]!. ╨Т URL f[sellerId]!=uuid ╨╖╨╜╨░╨║ = ╨╛╤В╨┤╨╡╨╗╤П╨╡╤В ╨╕╨╝╤П ╨╛╤В ╨╖╨╜╨░╤З╨╡╨╜╨╕╤П. total ╤Б╤З╨╕╤В╨░╨╡╤В╤Б╤П ╨▓ Elasticsearch ╨╕
+        ╨╝╨╛╨╢╨╡╤В ╨▓╨║╨╗╤О╤З╨░╤В╤М ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╜╤Л╨╡ ╤В╨╛╨▓╨░╤А╤Л ╨┐╤А╨╕ ╤Г╤Б╤В╨░╤А╨╡╨▓╤И╨╡╨╝ ╨╕╨╜╨┤╨╡╨║╤Б╨╡.
+      operationId: listCatalogProducts
+      parameters:
+      - name: q
+        in: query
+        description: ╨Я╨╛╨╕╤Б╨║ ╨┐╨╛ ╨╜╨░╨╖╨▓╨░╨╜╨╕╤О ╨╕ ╨╛╨┐╨╕╤Б╨░╨╜╨╕╤О ╤Б ╤А╤Г╤Б╤Б╨║╨╛╨╣ ╨╝╨╛╤А╤Д╨╛╨╗╨╛╨│╨╕╨╡╨╣ ╨╕ ╨╛╨┐╨╡╤З╨░╤В╨║╨░╨╝╨╕, ╨┐╤Г╤Б╤В╨╛╨╣ ╤В╨╡╨║╤Б╤В ╨╜╨╡ ╨╛╨│╤А╨░╨╜╨╕╤З╨╕╨▓╨░╨╡╤В
+          ╨▓╤Л╨┤╨░╤З╤Г
+        schema:
+          type: string
+        example: ╨║╨╜╨╕╨│╨╕
+      - name: f[price]
+        in: query
+        description: ╨Т╨║╨╗╤О╤З╨╕╤В╨╡╨╗╤М╨╜╤Л╨╣ ╨┤╨╕╨░╨┐╨░╨╖╨╛╨╜ ╤Ж╨╡╨╗╤Л╤Е ╨╜╨╡╨╛╤В╤А╨╕╤Ж╨░╤В╨╡╨╗╤М╨╜╤Л╤Е ╤Ж╨╡╨╜ min,max, min ╨╜╨╡ ╨▒╨╛╨╗╤М╤И╨╡ max
+        schema:
+          type: string
+        example: 100,5000
+      - name: f[category]
+        in: query
+        description: ╨Ю╨┤╨╕╨╜ ╨╕╨╗╨╕ ╨╜╨╡╤Б╨║╨╛╨╗╤М╨║╨╛ slug ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╣ ╤З╨╡╤А╨╡╨╖ ╨╖╨░╨┐╤П╤В╤Г╤О, ╨┤╨╛╤Б╤В╨░╤В╨╛╤З╨╜╨╛ ╤Б╨╛╨▓╨┐╨░╨┤╨╡╨╜╨╕╤П ╤Б ╨╛╨┤╨╜╨╕╨╝
+        schema:
+          type: string
+        example: books,electronics
+      - name: f[categoryId]
+        in: query
+        description: ╨Ю╨┤╨╕╨╜ ╨╕╨╗╨╕ ╨╜╨╡╤Б╨║╨╛╨╗╤М╨║╨╛ UUID ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╣ ╤З╨╡╤А╨╡╨╖ ╨╖╨░╨┐╤П╤В╤Г╤О
+        schema:
+          type: string
+        example: 00000000-0000-0000-0000-000000000001
+      - name: f[sellerId]
+        in: query
+        description: ╨Ю╨┤╨╕╨╜ ╨╕╨╗╨╕ ╨╜╨╡╤Б╨║╨╛╨╗╤М╨║╨╛ UUID ╨░╨║╨║╨░╤Г╨╜╤В╨╛╨▓ ╨┐╤А╨╛╨┤╨░╨▓╤Ж╨╛╨▓ ╤З╨╡╤А╨╡╨╖ ╨╖╨░╨┐╤П╤В╤Г╤О
+        schema:
+          type: string
+        example: 00000000-0000-0000-0000-000000000010
+      - name: f[category]!
+        in: query
+        description: ╨Ш╤Б╨║╨╗╤О╤З╨╕╤В╤М ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕ ╨┐╨╛ slug, ╨╜╨╡╤Б╨║╨╛╨╗╤М╨║╨╛ ╨╖╨╜╨░╤З╨╡╨╜╨╕╨╣ ╤З╨╡╤А╨╡╨╖ ╨╖╨░╨┐╤П╤В╤Г╤О
+        schema:
+          type: string
+        example: archived
+      - name: f[categoryId]!
+        in: query
+        description: ╨Ш╤Б╨║╨╗╤О╤З╨╕╤В╤М ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕ ╨┐╨╛ UUID, ╨╜╨╡╤Б╨║╨╛╨╗╤М╨║╨╛ ╨╖╨╜╨░╤З╨╡╨╜╨╕╨╣ ╤З╨╡╤А╨╡╨╖ ╨╖╨░╨┐╤П╤В╤Г╤О
+        schema:
+          type: string
+        example: 00000000-0000-0000-0000-000000000002
+      - name: f[sellerId]!
+        in: query
+        description: ╨Ш╤Б╨║╨╗╤О╤З╨╕╤В╤М ╨┐╤А╨╛╨┤╨░╨▓╤Ж╨╛╨▓ ╨┐╨╛ UUID ╨░╨║╨║╨░╤Г╨╜╤В╨░, ╨╜╨╡╤Б╨║╨╛╨╗╤М╨║╨╛ ╨╖╨╜╨░╤З╨╡╨╜╨╕╨╣ ╤З╨╡╤А╨╡╨╖ ╨╖╨░╨┐╤П╤В╤Г╤О
+        schema:
+          type: string
+        example: 00000000-0000-0000-0000-000000000011
+      - name: sort
+        in: query
+        description: '╨С╨╡╨╖ sort: ╤Б q тАФ ╤А╨╡╨╗╨╡╨▓╨░╨╜╤В╨╜╨╛╤Б╤В╤М, ╨▒╨╡╨╖ q тАФ createdAt,desc. ╨Я╤А╨╕ ╤А╨░╨▓╨╡╨╜╤Б╤В╨▓╨╡ ╨╕╤Б╨┐╨╛╨╗╤М╨╖╤Г╨╡╤В╤Б╤П id'
+        schema:
+          type: string
+          enum:
+          - price,asc
+          - price,desc
+          - createdAt,asc
+          - createdAt,desc
+        example: price,asc
+      - name: page
+        in: query
+        description: ╨Э╨╛╨╝╨╡╤А ╤Б╤В╤А╨░╨╜╨╕╤Ж╤Л ╤Б ╨╜╤Г╨╗╤П. ╨Ф╨╛╨╗╨╢╨╜╨╛ ╨▓╤Л╨┐╨╛╨╗╨╜╤П╤В╤М╤Б╤П (page + 1) * size <= 10000
+        schema:
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+        example: 0
+      - name: size
+        in: query
+        description: ╨а╨░╨╖╨╝╨╡╤А ╤Б╤В╤А╨░╨╜╨╕╤Ж╤Л ╨╛╤В 1 ╨┤╨╛ 100. ╨Ф╨╛╨╗╨╢╨╜╨╛ ╨▓╤Л╨┐╨╛╨╗╨╜╤П╤В╤М╤Б╤П (page + 1) * size <= 10000
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          maximum: 100
+          minimum: 1
+        example: 20
+      responses:
+        '200':
+          description: ╨б╤В╤А╨░╨╜╨╕╤Ж╨░ ╤В╨╛╨▓╨░╤А╨╛╨▓
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductPageResponse'
+              examples:
+                emptyPage:
+                  description: emptyPage
+                  value:
+                    items: []
+                    page: 0
+                    size: 20
+                    total: 0
+        '400':
+          description: ╨Э╨╡╨║╨╛╤А╤А╨╡╨║╤В╨╜╤Л╨╡ ╨┐╨░╤А╨░╨╝╨╡╤В╤А╤Л ╨╖╨░╨┐╤А╨╛╤Б╨░ ╨╕╨╗╨╕ UUID
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
+        '503':
+          description: PostgreSQL Elasticsearch ╨╕╨╗╨╕ Auth ╨▓╤А╨╡╨╝╨╡╨╜╨╜╨╛ ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╜╤Л
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
+  /api/v1/catalog/products/{id}:
+    get:
+      tags:
+      - Products
+      summary: ╨Я╨╛╨╗╤Г╤З╨╕╤В╤М ╨║╨░╤А╤В╨╛╤З╨║╤Г ╤В╨╛╨▓╨░╤А╨░
+      description: ╨б╨║╤А╤Л╤В╤Л╨╣, ╨░╤А╤Е╨╕╨▓╨╜╤Л╨╣, ╤Г╨┤╨░╨╗╤С╨╜╨╜╤Л╨╣ ╤В╨╛╨▓╨░╤А ╨╕╨╗╨╕ ╤В╨╛╨▓╨░╤А ╨╜╨╡╨░╨║╤В╨╕╨▓╨╜╨╛╨╣ ╨▓╨╡╤В╨║╨╕ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╣ ╨▓╨╛╨╖╨▓╤А╨░╤Й╨░╨╡╤В 404
+      operationId: getCatalogProduct
+      parameters:
+      - name: id
+        in: path
+        description: UUID ╤В╨╛╨▓╨░╤А╨░
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 00000000-0000-0000-0000-000000000101
+      responses:
+        '200':
+          description: ╨Ъ╨░╤А╤В╨╛╤З╨║╨░ ╤В╨╛╨▓╨░╤А╨░
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          description: ╨Э╨╡╨║╨╛╤А╤А╨╡╨║╤В╨╜╤Л╨╡ ╨┐╨░╤А╨░╨╝╨╡╤В╤А╤Л ╨╖╨░╨┐╤А╨╛╤Б╨░ ╨╕╨╗╨╕ UUID
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
+        '404':
+          description: ╨а╨╡╤Б╤Г╤А╤Б ╨╛╤В╤Б╤Г╤В╤Б╤В╨▓╤Г╨╡╤В ╨╕╨╗╨╕ ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╡╨╜ ╨┤╨╗╤П ╨┐╤Г╨▒╨╗╨╕╤З╨╜╨╛╨╣ ╨▓╨╕╤В╤А╨╕╨╜╤Л
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
+        '503':
+          description: PostgreSQL ╨╕╨╗╨╕ Auth ╨▓╤А╨╡╨╝╨╡╨╜╨╜╨╛ ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╜╤Л
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
+  /api/v1/catalog/categories:
+    get:
+      tags:
+      - Categories
+      summary: ╨Я╨╛╨╗╤Г╤З╨╕╤В╤М ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕ ╨▓╨╕╤В╤А╨╕╨╜╤Л
+      description: '╨Ъ╨░╤В╨╡╨│╨╛╤А╨╕╤П ╨╕ ╨▓╤Б╨╡ ╨╡╤С ╨┐╤А╨╡╨┤╨║╨╕ ╨┤╨╛╨╗╨╢╨╜╤Л ╨▒╤Л╤В╤М ╨░╨║╤В╨╕╨▓╨╜╤Л. ╨Я╨╛╤А╤П╨┤╨╛╨║: sortOrder, name, id. ╨Я╤А╨╕ parentId ╨▓╨╛╨╖╨▓╤А╨░╤Й╨░╤О╤В╤Б╤П
+        ╨┐╨╛╤В╨╛╨╝╨║╨╕ ╨▒╨╡╨╖ ╤Б╨░╨╝╨╛╨│╨╛ ╤А╨╛╨┤╨╕╤В╨╡╨╗╤П. ╨Т ╨┐╨╗╨╛╤Б╨║╨╛╨╝ ╤Б╨┐╨╕╤Б╨║╨╡ children ╨┐╤Г╤Б╤В╨╛╨╣. ╨Э╨╡╨╕╨╖╨▓╨╡╤Б╤В╨╜╤Л╨╡ ╨╕ ╨┐╨╛╨▓╤В╨╛╤А╨╜╤Л╨╡ ╨┐╨░╤А╨░╨╝╨╡╤В╤А╤Л ╨▓╨╛╨╖╨▓╤А╨░╤Й╨░╤О╤В
+        400'
+      operationId: listCatalogCategories
+      parameters:
+      - name: tree
+        in: query
+        description: true тАФ ╨┤╨╡╤А╨╡╨▓╨╛, false тАФ ╨┐╨╗╨╛╤Б╨║╨╕╨╣ ╤Б╨┐╨╕╤Б╨╛╨║. ╨Я╤А╨╕╨╜╨╕╨╝╨░╤О╤В╤Б╤П ╤В╨╛╨╗╤М╨║╨╛ true ╨╕ false ╨▓ ╨╜╨╕╨╢╨╜╨╡╨╝ ╤А╨╡╨│╨╕╤Б╤В╤А╨╡
+        schema:
+          type: boolean
+          default: true
+      - name: parentId
+        in: query
+        description: UUID ╤А╨╛╨┤╨╕╤В╨╡╨╗╤П ╨┐╨╛╨┤╨┤╨╡╤А╨╡╨▓╨░. ╨Э╨╡╨╕╨╖╨▓╨╡╤Б╤В╨╜╤Л╨╣ ╨╕╨╗╨╕ ╨╜╨╡╨░╨║╤В╨╕╨▓╨╜╤Л╨╣ ╤А╨╛╨┤╨╕╤В╨╡╨╗╤М ╨▓╨╛╨╖╨▓╤А╨░╤Й╨░╨╡╤В 404
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ╨б╨┐╨╕╤Б╨╛╨║ ╨║╨╛╤А╨╜╨╡╨╣ ╨┤╨╡╤А╨╡╨▓╨░ ╨╕╨╗╨╕ ╨┐╨╗╨╛╤Б╨║╨╕╨╣ ╤Б╨┐╨╕╤Б╨╛╨║ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╣
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryResponse'
+        '400':
+          description: ╨Э╨╡╨║╨╛╤А╤А╨╡╨║╤В╨╜╤Л╨╡ ╨┐╨░╤А╨░╨╝╨╡╤В╤А╤Л ╨╖╨░╨┐╤А╨╛╤Б╨░ ╨╕╨╗╨╕ UUID
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
+        '404':
+          description: ╨а╨╡╤Б╤Г╤А╤Б ╨╛╤В╤Б╤Г╤В╤Б╤В╨▓╤Г╨╡╤В ╨╕╨╗╨╕ ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╡╨╜ ╨┤╨╗╤П ╨┐╤Г╨▒╨╗╨╕╤З╨╜╨╛╨╣ ╨▓╨╕╤В╤А╨╕╨╜╤Л
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
+        '503':
+          description: PostgreSQL ╨▓╤А╨╡╨╝╨╡╨╜╨╜╨╛ ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╡╨╜
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
+components:
+  schemas:
+    ProductImageResponse:
+      type: object
+      description: ╨б╤Б╤Л╨╗╨║╨░ ╨╜╨░ ╨╕╨╖╨╛╨▒╤А╨░╨╢╨╡╨╜╨╕╨╡ ╤В╨╛╨▓╨░╤А╨░
+      properties:
+        mediaId:
+          type: string
+          format: uuid
+          description: ╨Ш╨┤╨╡╨╜╤В╨╕╤Д╨╕╨║╨░╤В╨╛╤А ╤Д╨░╨╣╨╗╨░ ╨▓ Media, URL ╨┐╨╛╨╗╤Г╤З╨░╨╡╤В╤Б╤П ╤З╨╡╤А╨╡╨╖ API Media
+          example: 00000000-0000-0000-0000-000000000201
+        sortOrder:
+          type: integer
+          format: int32
+          description: ╨Я╨╛╤А╤П╨┤╨╛╨║ ╨╕╨╖╨╛╨▒╤А╨░╨╢╨╡╨╜╨╕╤П, ╨╝╨╡╨╜╤М╤И╨╡╨╡ ╤З╨╕╤Б╨╗╨╛ ╨╛╨╖╨╜╨░╤З╨░╨╡╤В ╨▒╨╛╨╗╨╡╨╡ ╤А╨░╨╜╨╜╨╕╨╣ ╨┐╨╛╨║╨░╨╖
+          example: 0
+      required:
+      - mediaId
+      - sortOrder
+    ProductPageResponse:
+      type: object
+      description: ╨б╤В╤А╨░╨╜╨╕╤Ж╨░ ╨╜╨░╨╣╨┤╨╡╨╜╨╜╤Л╤Е ╤В╨╛╨▓╨░╤А╨╛╨▓
+      properties:
+        items:
+          type: array
+          description: ╨Ъ╨░╤А╤В╨╛╤З╨║╨╕ ╤В╨╡╨║╤Г╤Й╨╡╨╣ ╤Б╤В╤А╨░╨╜╨╕╤Ж╤Л, ╨┐╤Г╤Б╤В╨╛╨╣ ╨╝╨░╤Б╤Б╨╕╨▓ ╨╡╤Б╨╗╨╕ ╤Б╨╛╨▓╨┐╨░╨┤╨╡╨╜╨╕╨╣ ╨╜╨╡╤В
+          items:
+            $ref: '#/components/schemas/ProductResponse'
+        page:
+          type: integer
+          format: int32
+          description: ╨Э╨╛╨╝╨╡╤А ╤Б╤В╤А╨░╨╜╨╕╤Ж╤Л ╤Б ╨╜╤Г╨╗╤П
+          example: 0
+          minimum: 0
+        size:
+          type: integer
+          format: int32
+          description: ╨Ч╨░╨┐╤А╨╛╤И╨╡╨╜╨╜╤Л╨╣ ╤А╨░╨╖╨╝╨╡╤А ╤Б╤В╤А╨░╨╜╨╕╤Ж╤Л, ╨╝╨╛╨╢╨╡╤В ╨┐╤А╨╡╨▓╤Л╤И╨░╤В╤М ╤Д╨░╨║╤В╨╕╤З╨╡╤Б╨║╨╛╨╡ ╤З╨╕╤Б╨╗╨╛ ╨║╨░╤А╤В╨╛╤З╨╡╨║
+          example: 20
+          maximum: 100
+          minimum: 1
+        total:
+          type: integer
+          format: int32
+          description: ╨з╨╕╤Б╨╗╨╛ ╤Б╨╛╨▓╨┐╨░╨┤╨╡╨╜╨╕╨╣ ╨▓ Elasticsearch ╨┤╨╛ ╨▓╤Л╨┤╨╡╨╗╨╡╨╜╨╕╤П ╤Б╤В╤А╨░╨╜╨╕╤Ж╤Л, ╨┐╤А╨╕ ╤Г╤Б╤В╨░╤А╨╡╨▓╤И╨╡╨╝ ╨╕╨╜╨┤╨╡╨║╤Б╨╡ ╨╝╨╛╨╢╨╡╤В ╨▓╨║╨╗╤О╤З╨░╤В╤М
+            ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╜╤Л╨╡ ╤В╨╛╨▓╨░╤А╤Л
+          example: 42
+          minimum: 0
+      required:
+      - items
+      - page
+      - size
+      - total
+    ProductResponse:
+      type: object
+      description: ╨Ъ╨░╤А╤В╨╛╤З╨║╨░ ╨┤╨╛╤Б╤В╤Г╨┐╨╜╨╛╨│╨╛ ╤В╨╛╨▓╨░╤А╨░
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ╨Ш╨┤╨╡╨╜╤В╨╕╤Д╨╕╨║╨░╤В╨╛╤А ╤В╨╛╨▓╨░╤А╨░
+          example: 00000000-0000-0000-0000-000000000101
+        title:
+          type: string
+          description: ╨Э╨░╨╖╨▓╨░╨╜╨╕╨╡ ╤В╨╛╨▓╨░╤А╨░
+          example: ╨Э╨╛╨▓╨░╤П ╨║╨╜╨╕╨│╨░
+        description:
+          type:
+          - string
+          - 'null'
+          description: ╨Ю╨┐╨╕╤Б╨░╨╜╨╕╨╡ ╤В╨╛╨▓╨░╤А╨░ ╨╕╨╗╨╕ null
+          example: ╨Ъ╨╜╨╕╨│╨░ ╨╛ ╨╢╨╕╨▓╨╛╤В╨╜╤Л╤Е
+        price:
+          type: integer
+          format: int64
+          description: ╨ж╨╡╨╜╨░ ╨▓ ╤Ж╨╡╨╗╤Л╤Е ╨▒╨╛╨╜╤Г╤Б╨░╤Е
+          example: 1500
+          minimum: 1
+        categoryId:
+          type: string
+          format: uuid
+          description: ╨Ш╨┤╨╡╨╜╤В╨╕╤Д╨╕╨║╨░╤В╨╛╤А ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕
+          example: 00000000-0000-0000-0000-000000000001
+        categoryName:
+          type: string
+          description: ╨Э╨░╨╖╨▓╨░╨╜╨╕╨╡ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕
+          example: ╨Ъ╨╜╨╕╨│╨╕
+        categorySlug:
+          type: string
+          description: Slug ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕
+          example: books
+        images:
+          type: array
+          description: ╨Ш╨╖╨╛╨▒╤А╨░╨╢╨╡╨╜╨╕╤П ╨▓ ╨┐╨╛╤А╤П╨┤╨║╨╡ ╨┐╨╛╨║╨░╨╖╨░, ╨┐╤Г╤Б╤В╨╛╨╣ ╨╝╨░╤Б╤Б╨╕╨▓ ╨╡╤Б╨╗╨╕ ╨╕╨╖╨╛╨▒╤А╨░╨╢╨╡╨╜╨╕╨╣ ╨╜╨╡╤В
+          items:
+            $ref: '#/components/schemas/ProductImageResponse'
+        sellerId:
+          type: string
+          format: uuid
+          description: ╨Ш╨┤╨╡╨╜╤В╨╕╤Д╨╕╨║╨░╤В╨╛╤А ╨░╨║╨║╨░╤Г╨╜╤В╨░ ╨┐╤А╨╛╨┤╨░╨▓╤Ж╨░, ╤Б╨╛╨▓╨┐╨░╨┤╨░╨╡╤В ╤Б sub ╨╡╨│╨╛ JWT
+          example: 00000000-0000-0000-0000-000000000010
+        companyName:
+          type:
+          - string
+          - 'null'
+          description: ╨Э╨░╨╖╨▓╨░╨╜╨╕╨╡ ╨╝╨░╨│╨░╨╖╨╕╨╜╨░ ╨╕╨╗╨╕ null, ╨╡╤Б╨╗╨╕ Auth ╨╜╨╡ ╨╜╨░╤И╤С╨╗ ╨┐╤А╨╛╨┤╨░╨▓╤Ж╨░
+          example: ╨Ъ╨╜╨╕╨╢╨╜╤Л╨╣ ╨╝╨░╨│╨░╨╖╨╕╨╜
+        sellerDescription:
+          type:
+          - string
+          - 'null'
+          description: ╨Ю╨┐╨╕╤Б╨░╨╜╨╕╨╡ ╨╝╨░╨│╨░╨╖╨╕╨╜╨░ ╨╕╨╗╨╕ null
+          example: ╨Ь╨░╨│╨░╨╖╨╕╨╜ ╨║╨╜╨╕╨│
+        createdAt:
+          type: string
+          format: date-time
+          description: ╨Т╤А╨╡╨╝╤П ╤Б╨╛╨╖╨┤╨░╨╜╨╕╤П ╨▓ ╤Д╨╛╤А╨╝╨░╤В╨╡ ISO 8601
+          example: '2026-11-27T00:00:00Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: ╨Т╤А╨╡╨╝╤П ╨┐╨╛╤Б╨╗╨╡╨┤╨╜╨╡╨│╨╛ ╨╕╨╖╨╝╨╡╨╜╨╡╨╜╨╕╤П ╨▓ ╤Д╨╛╤А╨╝╨░╤В╨╡ ISO 8601
+          example: '2026-11-27T01:00:00Z'
+      required:
+      - categoryId
+      - categoryName
+      - categorySlug
+      - companyName
+      - createdAt
+      - description
+      - id
+      - images
+      - price
+      - sellerDescription
+      - sellerId
+      - title
+      - updatedAt
+    ProblemResponse:
+      type: object
+      description: ╨Ю╤И╨╕╨▒╨║╨░ ╨▓ ╤Д╨╛╤А╨╝╨░╤В╨╡ Problem Details
+      properties:
+        type:
+          type: string
+          description: ╨Ш╨┤╨╡╨╜╤В╨╕╤Д╨╕╨║╨░╤В╨╛╤А ╤В╨╕╨┐╨░ ╨╛╤И╨╕╨▒╨║╨╕
+          example: about:blank
+        title:
+          type: string
+          description: ╨Ъ╤А╨░╤В╨║╨╛╨╡ ╨╜╨░╨╖╨▓╨░╨╜╨╕╨╡ HTTP ╨╛╤И╨╕╨▒╨║╨╕
+          example: Bad Request
+        status:
+          type: integer
+          format: int32
+          description: HTTP ╨║╨╛╨┤ ╨╛╤И╨╕╨▒╨║╨╕
+          example: 400
+        detail:
+          type: string
+          description: ╨Ю╨┐╨╕╤Б╨░╨╜╨╕╨╡ ╨┐╤А╨╕╤З╨╕╨╜╤Л ╨╛╤И╨╕╨▒╨║╨╕
+          example: Price minimum is greater than maximum
+        instance:
+          type: string
+          description: ╨Я╤Г╤В╤М ╨╖╨░╨┐╤А╨╛╤Б╨░ ╨▒╨╡╨╖ query string
+          example: /api/v1/catalog/products
+        timestamp:
+          type: string
+          format: date-time
+          description: ╨Т╤А╨╡╨╝╤П ╤Д╨╛╤А╨╝╨╕╤А╨╛╨▓╨░╨╜╨╕╤П ╨╛╤И╨╕╨▒╨║╨╕ ╨▓ ╤Д╨╛╤А╨╝╨░╤В╨╡ ISO 8601
+          example: '2026-11-27T00:00:00Z'
+      required:
+      - detail
+      - instance
+      - status
+      - timestamp
+      - title
+      - type
+    CategoryResponse:
+      type: object
+      description: ╨г╨╖╨╡╨╗ ╨┤╨╡╤А╨╡╨▓╨░ ╨╕╨╗╨╕ ╨┐╨╗╨╛╤Б╨║╨╛╨│╨╛ ╤Б╨┐╨╕╤Б╨║╨░ ╨┐╤Г╨▒╨╗╨╕╤З╨╜╤Л╤Е ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╣
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ╨Ш╨┤╨╡╨╜╤В╨╕╤Д╨╕╨║╨░╤В╨╛╤А ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕
+          example: 00000000-0000-0000-0000-000000000001
+        parentId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+          description: ╨Ш╨┤╨╡╨╜╤В╨╕╤Д╨╕╨║╨░╤В╨╛╤А ╤А╨╛╨┤╨╕╤В╨╡╨╗╤П ╨╕╨╗╨╕ null ╨┤╨╗╤П ╨║╨╛╤А╨╜╨╡╨▓╨╛╨╣ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕
+          example: 00000000-0000-0000-0000-000000000002
+        name:
+          type: string
+          description: ╨Э╨░╨╖╨▓╨░╨╜╨╕╨╡ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕
+          example: ╨Ъ╨╜╨╕╨│╨╕
+        slug:
+          type: string
+          description: Slug ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕ ╨┤╨╗╤П ╤Д╨╕╨╗╤М╤В╤А╨░╤Ж╨╕╨╕ ╤В╨╛╨▓╨░╤А╨╛╨▓
+          example: books
+        sortOrder:
+          type: integer
+          format: int32
+          description: ╨Я╨╛╤А╤П╨┤╨╛╨║ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕ ╤Б╤А╨╡╨┤╨╕ ╤Б╨╛╤Б╨╡╨┤╨╡╨╣
+          example: 0
+        children:
+          type: array
+          description: ╨Т╨╕╨┤╨╕╨╝╤Л╨╡ ╨┤╨╛╤З╨╡╤А╨╜╨╕╨╡ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕, ╨┐╤Г╤Б╤В╨╛╨╣ ╨╝╨░╤Б╤Б╨╕╨▓ ╨┐╤А╨╕ tree=false ╨╕╨╗╨╕ ╨╛╤В╤Б╤Г╤В╤Б╤В╨▓╨╕╨╕ ╨┐╨╛╤В╨╛╨╝╨║╨╛╨▓
+          items:
+            $ref: '#/components/schemas/CategoryResponse'
+      required:
+      - children
+      - id
+      - name
+      - parentId
+      - slug
+      - sortOrder

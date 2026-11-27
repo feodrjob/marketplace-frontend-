@@ -1,13 +1,16 @@
 # OpenAPI
 
-`auth.yaml` — копия спецификации Auth Service из репозитория `marketplace-Backend`.
+Здесь лежат копии спецификаций из репозитория `marketplace-Backend`:
+
+- `auth.yaml` — `auth/resources/static/openapi/auth.yaml`;
+- `catalog.yaml` — `catalog/resources/static/openapi/catalog.yaml`.
 
 Обновление контракта:
 
-1. Взять актуальный `auth/resources/static/openapi/auth.yaml` из бэкенда
-   или `GET /v3/api-docs` у запущенного Auth Service.
-2. Положить файл сюда.
+1. Взять актуальные файлы из бэкенда или `GET /v3/api-docs` у запущенных сервисов.
+2. Положить их сюда.
 3. Выполнить `pnpm run gen:api`.
 
-Сгенерированный клиент лежит в `src/shared/api/generated/auth.ts`.
-Редактировать его руками нельзя — изменения потеряются при следующей генерации.
+Сгенерированные клиенты лежат в `src/shared/api/generated/auth.ts` и
+`src/shared/api/generated/catalog.ts`. Редактировать их руками нельзя —
+изменения потеряются при следующей генерации.
