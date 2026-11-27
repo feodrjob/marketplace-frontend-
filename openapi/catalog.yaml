@@ -1,84 +1,84 @@
 openapi: 3.1.0
 info:
-  title: ╨в-╨Ь╨░╤А╨║╨╡╤В тАФ Catalog Service
-  description: '╨Ъ╨╛╨╜╤В╤А╨░╨║╤В ╤А╨╡╨░╨╗╨╕╨╖╨╛╨▓╨░╨╜╨╜╨╛╨╣ ╨┐╤Г╨▒╨╗╨╕╤З╨╜╨╛╨╣ ╨▓╨╕╤В╤А╨╕╨╜╤Л US-2.1 ╨╕ US-2.2. ╨Т╤Б╨╡ ╨╛╨┐╨╡╤А╨░╤Ж╨╕╨╕ ╨┤╨╛╤Б╤В╤Г╨┐╨╜╤Л ╨▒╨╡╨╖ JWT. ╨ж╨╡╨╜╨░ ╤Г╨║╨░╨╖╨░╨╜╨░
-    ╨▓ ╤Ж╨╡╨╗╤Л╤Е ╨▒╨╛╨╜╤Г╤Б╨░╤Е. ╨Я╨╛╨╕╤Б╨║ ╨▓╤Л╨┐╨╛╨╗╨╜╤П╨╡╤В╤Б╤П ╨▓ Elasticsearch, ╨║╨░╤А╤В╨╛╤З╨║╨╕ ╤З╨╕╤В╨░╤О╤В╤Б╤П ╨╕╨╖ PostgreSQL. ╨г╤Б╤В╨░╤А╨╡╨▓╤И╨╕╨╣ ╨╕╨╜╨┤╨╡╨║╤Б ╨╝╨╛╨╢╨╡╤В
-    ╤Б╨╛╨┤╨╡╤А╨╢╨░╤В╤М ╤Г╨╢╨╡ ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╜╤Л╨╡ ╤В╨╛╨▓╨░╤А╤Л: ╨╛╨╜╨╕ ╨╕╤Б╨║╨╗╤О╤З╨░╤О╤В╤Б╤П ╨╕╨╖ ╨║╨░╤А╤В╨╛╤З╨╡╨║, ╨╜╨╛ ╨╝╨╛╨│╤Г╤В ╨╛╤Б╤В╨░╨▓╨░╤В╤М╤Б╤П ╨▓ total. ╨г╨┐╤А╨░╨▓╨╗╨╡╨╜╨╕╨╡ ╨░╤Б╤Б╨╛╤А╤В╨╕╨╝╨╡╨╜╤В╨╛╨╝
-    ╨╕ ╨╖╨░╨│╤А╤Г╨╖╨║╨░ ╨╕╨╖╨╛╨▒╤А╨░╨╢╨╡╨╜╨╕╨╣ ╨▓ ╤Н╤В╨╛╤В ╨║╨╛╨╜╤В╤А╨░╨║╤В ╨╜╨╡ ╨▓╤Е╨╛╨┤╤П╤В.'
+  title: Т-Маркет — Catalog Service
+  description: 'Контракт реализованной публичной витрины US-2.1 и US-2.2. Все операции доступны без JWT. Цена указана
+    в целых бонусах. Поиск выполняется в Elasticsearch, карточки читаются из PostgreSQL. Устаревший индекс может
+    содержать уже недоступные товары: они исключаются из карточек, но могут оставаться в total. Управление ассортиментом
+    и загрузка изображений в этот контракт не входят.'
   version: 1.0.0
 servers:
 - url: /
-  description: ╨в╨╡╨║╤Г╤Й╨╕╨╣ origin, ╨┐╨╛╤А╤В Catalog ╨┐╨╛ ╤Г╨╝╨╛╨╗╤З╨░╨╜╨╕╤О 8083
+  description: Текущий origin, порт Catalog по умолчанию 8083
 tags:
 - name: Categories
-  description: ╨Я╤Г╨▒╨╗╨╕╤З╨╜╤Л╨╡ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕ ╨▓╨╕╤В╤А╨╕╨╜╤Л
+  description: Публичные категории витрины
 - name: Products
-  description: ╨Я╤Г╨▒╨╗╨╕╤З╨╜╤Л╨╣ ╨┐╨╛╨╕╤Б╨║ ╨╕ ╨║╨░╤А╤В╨╛╤З╨║╨╕ ╤В╨╛╨▓╨░╤А╨╛╨▓
+  description: Публичный поиск и карточки товаров
 paths:
   /api/v1/catalog/products:
     get:
       tags:
       - Products
-      summary: ╨Э╨░╨╣╤В╨╕ ╤В╨╛╨▓╨░╤А╤Л ╨┐╤Г╨▒╨╗╨╕╤З╨╜╨╛╨╣ ╨▓╨╕╤В╤А╨╕╨╜╤Л
-      description: ╨Т╨╛╨╖╨▓╤А╨░╤Й╨░╨╡╤В ╤В╨╛╨╗╤М╨║╨╛ ACTIVE ╤В╨╛╨▓╨░╤А╤Л ╨▓ ╨░╨║╤В╨╕╨▓╨╜╨╛╨╣ ╨▓╨╡╤В╨║╨╡ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╣. ╨а╨░╨╖╨╜╤Л╨╡ ╤Д╨╕╨╗╤М╤В╤А╤Л ╨╛╨▒╤К╨╡╨┤╨╕╨╜╤П╤О╤В╤Б╤П ╤З╨╡╤А╨╡╨╖
-        AND, ╨╖╨╜╨░╤З╨╡╨╜╨╕╤П ╨╛╨┤╨╜╨╛╨│╨╛ ╤Д╨╕╨╗╤М╤В╤А╨░ ╤З╨╡╤А╨╡╨╖ OR. ╨Т╤Б╨╡ ╨┐╨░╤А╨░╨╝╨╡╤В╤А╤Л ╨┐╨╡╤А╨╡╨┤╨░╤О╤В╤Б╤П ╨╜╨╡ ╨▒╨╛╨╗╨╡╨╡ ╨╛╨┤╨╜╨╛╨│╨╛ ╤А╨░╨╖╨░. ╨Э╨╡╨╕╨╖╨▓╨╡╤Б╤В╨╜╤Л╨╡ ╨┐╨░╤А╨░╨╝╨╡╤В╤А╤Л
-        ╨╛╤В╨║╨╗╨╛╨╜╤П╤О╤В╤Б╤П ╤Б 400. ╨Ю╤В╤А╨╕╤Ж╨░╨╜╨╕╨╡ ╤Ж╨╡╨╜╤Л ╨╜╨╡ ╨┐╨╛╨┤╨┤╨╡╤А╨╢╨╕╨▓╨░╨╡╤В╤Б╤П. ╨Ф╨╗╤П ╨╛╤В╤А╨╕╤Ж╨░╨╜╨╕╤П ╨╕╨╝╤П ╨┐╨░╤А╨░╨╝╨╡╤В╤А╨░ ╨╖╨░╨║╨░╨╜╤З╨╕╨▓╨░╨╡╤В╤Б╤П ╨╜╨░ !, ╨╜╨░╨┐╤А╨╕╨╝╨╡╤А
-        f[sellerId]!. ╨Т URL f[sellerId]!=uuid ╨╖╨╜╨░╨║ = ╨╛╤В╨┤╨╡╨╗╤П╨╡╤В ╨╕╨╝╤П ╨╛╤В ╨╖╨╜╨░╤З╨╡╨╜╨╕╤П. total ╤Б╤З╨╕╤В╨░╨╡╤В╤Б╤П ╨▓ Elasticsearch ╨╕
-        ╨╝╨╛╨╢╨╡╤В ╨▓╨║╨╗╤О╤З╨░╤В╤М ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╜╤Л╨╡ ╤В╨╛╨▓╨░╤А╤Л ╨┐╤А╨╕ ╤Г╤Б╤В╨░╤А╨╡╨▓╤И╨╡╨╝ ╨╕╨╜╨┤╨╡╨║╤Б╨╡.
+      summary: Найти товары публичной витрины
+      description: Возвращает только ACTIVE товары в активной ветке категорий. Разные фильтры объединяются через
+        AND, значения одного фильтра через OR. Все параметры передаются не более одного раза. Неизвестные параметры
+        отклоняются с 400. Отрицание цены не поддерживается. Для отрицания имя параметра заканчивается на !, например
+        f[sellerId]!. В URL f[sellerId]!=uuid знак = отделяет имя от значения. total считается в Elasticsearch и
+        может включать недоступные товары при устаревшем индексе.
       operationId: listCatalogProducts
       parameters:
       - name: q
         in: query
-        description: ╨Я╨╛╨╕╤Б╨║ ╨┐╨╛ ╨╜╨░╨╖╨▓╨░╨╜╨╕╤О ╨╕ ╨╛╨┐╨╕╤Б╨░╨╜╨╕╤О ╤Б ╤А╤Г╤Б╤Б╨║╨╛╨╣ ╨╝╨╛╤А╤Д╨╛╨╗╨╛╨│╨╕╨╡╨╣ ╨╕ ╨╛╨┐╨╡╤З╨░╤В╨║╨░╨╝╨╕, ╨┐╤Г╤Б╤В╨╛╨╣ ╤В╨╡╨║╤Б╤В ╨╜╨╡ ╨╛╨│╤А╨░╨╜╨╕╤З╨╕╨▓╨░╨╡╤В
-          ╨▓╤Л╨┤╨░╤З╤Г
+        description: Поиск по названию и описанию с русской морфологией и опечатками, пустой текст не ограничивает
+          выдачу
         schema:
           type: string
-        example: ╨║╨╜╨╕╨│╨╕
+        example: книги
       - name: f[price]
         in: query
-        description: ╨Т╨║╨╗╤О╤З╨╕╤В╨╡╨╗╤М╨╜╤Л╨╣ ╨┤╨╕╨░╨┐╨░╨╖╨╛╨╜ ╤Ж╨╡╨╗╤Л╤Е ╨╜╨╡╨╛╤В╤А╨╕╤Ж╨░╤В╨╡╨╗╤М╨╜╤Л╤Е ╤Ж╨╡╨╜ min,max, min ╨╜╨╡ ╨▒╨╛╨╗╤М╤И╨╡ max
+        description: Включительный диапазон целых неотрицательных цен min,max, min не больше max
         schema:
           type: string
         example: 100,5000
       - name: f[category]
         in: query
-        description: ╨Ю╨┤╨╕╨╜ ╨╕╨╗╨╕ ╨╜╨╡╤Б╨║╨╛╨╗╤М╨║╨╛ slug ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╣ ╤З╨╡╤А╨╡╨╖ ╨╖╨░╨┐╤П╤В╤Г╤О, ╨┤╨╛╤Б╤В╨░╤В╨╛╤З╨╜╨╛ ╤Б╨╛╨▓╨┐╨░╨┤╨╡╨╜╨╕╤П ╤Б ╨╛╨┤╨╜╨╕╨╝
+        description: Один или несколько slug категорий через запятую, достаточно совпадения с одним
         schema:
           type: string
         example: books,electronics
       - name: f[categoryId]
         in: query
-        description: ╨Ю╨┤╨╕╨╜ ╨╕╨╗╨╕ ╨╜╨╡╤Б╨║╨╛╨╗╤М╨║╨╛ UUID ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╣ ╤З╨╡╤А╨╡╨╖ ╨╖╨░╨┐╤П╤В╤Г╤О
+        description: Один или несколько UUID категорий через запятую
         schema:
           type: string
         example: 00000000-0000-0000-0000-000000000001
       - name: f[sellerId]
         in: query
-        description: ╨Ю╨┤╨╕╨╜ ╨╕╨╗╨╕ ╨╜╨╡╤Б╨║╨╛╨╗╤М╨║╨╛ UUID ╨░╨║╨║╨░╤Г╨╜╤В╨╛╨▓ ╨┐╤А╨╛╨┤╨░╨▓╤Ж╨╛╨▓ ╤З╨╡╤А╨╡╨╖ ╨╖╨░╨┐╤П╤В╤Г╤О
+        description: Один или несколько UUID аккаунтов продавцов через запятую
         schema:
           type: string
         example: 00000000-0000-0000-0000-000000000010
       - name: f[category]!
         in: query
-        description: ╨Ш╤Б╨║╨╗╤О╤З╨╕╤В╤М ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕ ╨┐╨╛ slug, ╨╜╨╡╤Б╨║╨╛╨╗╤М╨║╨╛ ╨╖╨╜╨░╤З╨╡╨╜╨╕╨╣ ╤З╨╡╤А╨╡╨╖ ╨╖╨░╨┐╤П╤В╤Г╤О
+        description: Исключить категории по slug, несколько значений через запятую
         schema:
           type: string
         example: archived
       - name: f[categoryId]!
         in: query
-        description: ╨Ш╤Б╨║╨╗╤О╤З╨╕╤В╤М ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕ ╨┐╨╛ UUID, ╨╜╨╡╤Б╨║╨╛╨╗╤М╨║╨╛ ╨╖╨╜╨░╤З╨╡╨╜╨╕╨╣ ╤З╨╡╤А╨╡╨╖ ╨╖╨░╨┐╤П╤В╤Г╤О
+        description: Исключить категории по UUID, несколько значений через запятую
         schema:
           type: string
         example: 00000000-0000-0000-0000-000000000002
       - name: f[sellerId]!
         in: query
-        description: ╨Ш╤Б╨║╨╗╤О╤З╨╕╤В╤М ╨┐╤А╨╛╨┤╨░╨▓╤Ж╨╛╨▓ ╨┐╨╛ UUID ╨░╨║╨║╨░╤Г╨╜╤В╨░, ╨╜╨╡╤Б╨║╨╛╨╗╤М╨║╨╛ ╨╖╨╜╨░╤З╨╡╨╜╨╕╨╣ ╤З╨╡╤А╨╡╨╖ ╨╖╨░╨┐╤П╤В╤Г╤О
+        description: Исключить продавцов по UUID аккаунта, несколько значений через запятую
         schema:
           type: string
         example: 00000000-0000-0000-0000-000000000011
       - name: sort
         in: query
-        description: '╨С╨╡╨╖ sort: ╤Б q тАФ ╤А╨╡╨╗╨╡╨▓╨░╨╜╤В╨╜╨╛╤Б╤В╤М, ╨▒╨╡╨╖ q тАФ createdAt,desc. ╨Я╤А╨╕ ╤А╨░╨▓╨╡╨╜╤Б╤В╨▓╨╡ ╨╕╤Б╨┐╨╛╨╗╤М╨╖╤Г╨╡╤В╤Б╤П id'
+        description: 'Без sort: с q — релевантность, без q — createdAt,desc. При равенстве используется id'
         schema:
           type: string
           enum:
@@ -89,7 +89,7 @@ paths:
         example: price,asc
       - name: page
         in: query
-        description: ╨Э╨╛╨╝╨╡╤А ╤Б╤В╤А╨░╨╜╨╕╤Ж╤Л ╤Б ╨╜╤Г╨╗╤П. ╨Ф╨╛╨╗╨╢╨╜╨╛ ╨▓╤Л╨┐╨╛╨╗╨╜╤П╤В╤М╤Б╤П (page + 1) * size <= 10000
+        description: Номер страницы с нуля. Должно выполняться (page + 1) * size <= 10000
         schema:
           type: integer
           format: int32
@@ -98,7 +98,7 @@ paths:
         example: 0
       - name: size
         in: query
-        description: ╨а╨░╨╖╨╝╨╡╤А ╤Б╤В╤А╨░╨╜╨╕╤Ж╤Л ╨╛╤В 1 ╨┤╨╛ 100. ╨Ф╨╛╨╗╨╢╨╜╨╛ ╨▓╤Л╨┐╨╛╨╗╨╜╤П╤В╤М╤Б╤П (page + 1) * size <= 10000
+        description: Размер страницы от 1 до 100. Должно выполняться (page + 1) * size <= 10000
         schema:
           type: integer
           format: int32
@@ -108,7 +108,7 @@ paths:
         example: 20
       responses:
         '200':
-          description: ╨б╤В╤А╨░╨╜╨╕╤Ж╨░ ╤В╨╛╨▓╨░╤А╨╛╨▓
+          description: Страница товаров
           content:
             application/json:
               schema:
@@ -122,13 +122,13 @@ paths:
                     size: 20
                     total: 0
         '400':
-          description: ╨Э╨╡╨║╨╛╤А╤А╨╡╨║╤В╨╜╤Л╨╡ ╨┐╨░╤А╨░╨╝╨╡╤В╤А╤Л ╨╖╨░╨┐╤А╨╛╤Б╨░ ╨╕╨╗╨╕ UUID
+          description: Некорректные параметры запроса или UUID
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemResponse'
         '503':
-          description: PostgreSQL Elasticsearch ╨╕╨╗╨╕ Auth ╨▓╤А╨╡╨╝╨╡╨╜╨╜╨╛ ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╜╤Л
+          description: PostgreSQL Elasticsearch или Auth временно недоступны
           content:
             application/problem+json:
               schema:
@@ -137,13 +137,13 @@ paths:
     get:
       tags:
       - Products
-      summary: ╨Я╨╛╨╗╤Г╤З╨╕╤В╤М ╨║╨░╤А╤В╨╛╤З╨║╤Г ╤В╨╛╨▓╨░╤А╨░
-      description: ╨б╨║╤А╤Л╤В╤Л╨╣, ╨░╤А╤Е╨╕╨▓╨╜╤Л╨╣, ╤Г╨┤╨░╨╗╤С╨╜╨╜╤Л╨╣ ╤В╨╛╨▓╨░╤А ╨╕╨╗╨╕ ╤В╨╛╨▓╨░╤А ╨╜╨╡╨░╨║╤В╨╕╨▓╨╜╨╛╨╣ ╨▓╨╡╤В╨║╨╕ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╣ ╨▓╨╛╨╖╨▓╤А╨░╤Й╨░╨╡╤В 404
+      summary: Получить карточку товара
+      description: Скрытый, архивный, удалённый товар или товар неактивной ветки категорий возвращает 404
       operationId: getCatalogProduct
       parameters:
       - name: id
         in: path
-        description: UUID ╤В╨╛╨▓╨░╤А╨░
+        description: UUID товара
         required: true
         schema:
           type: string
@@ -151,25 +151,25 @@ paths:
         example: 00000000-0000-0000-0000-000000000101
       responses:
         '200':
-          description: ╨Ъ╨░╤А╤В╨╛╤З╨║╨░ ╤В╨╛╨▓╨░╤А╨░
+          description: Карточка товара
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProductResponse'
         '400':
-          description: ╨Э╨╡╨║╨╛╤А╤А╨╡╨║╤В╨╜╤Л╨╡ ╨┐╨░╤А╨░╨╝╨╡╤В╤А╤Л ╨╖╨░╨┐╤А╨╛╤Б╨░ ╨╕╨╗╨╕ UUID
+          description: Некорректные параметры запроса или UUID
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemResponse'
         '404':
-          description: ╨а╨╡╤Б╤Г╤А╤Б ╨╛╤В╤Б╤Г╤В╤Б╤В╨▓╤Г╨╡╤В ╨╕╨╗╨╕ ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╡╨╜ ╨┤╨╗╤П ╨┐╤Г╨▒╨╗╨╕╤З╨╜╨╛╨╣ ╨▓╨╕╤В╤А╨╕╨╜╤Л
+          description: Ресурс отсутствует или недоступен для публичной витрины
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemResponse'
         '503':
-          description: PostgreSQL ╨╕╨╗╨╕ Auth ╨▓╤А╨╡╨╝╨╡╨╜╨╜╨╛ ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╜╤Л
+          description: PostgreSQL или Auth временно недоступны
           content:
             application/problem+json:
               schema:
@@ -178,27 +178,27 @@ paths:
     get:
       tags:
       - Categories
-      summary: ╨Я╨╛╨╗╤Г╤З╨╕╤В╤М ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕ ╨▓╨╕╤В╤А╨╕╨╜╤Л
-      description: '╨Ъ╨░╤В╨╡╨│╨╛╤А╨╕╤П ╨╕ ╨▓╤Б╨╡ ╨╡╤С ╨┐╤А╨╡╨┤╨║╨╕ ╨┤╨╛╨╗╨╢╨╜╤Л ╨▒╤Л╤В╤М ╨░╨║╤В╨╕╨▓╨╜╤Л. ╨Я╨╛╤А╤П╨┤╨╛╨║: sortOrder, name, id. ╨Я╤А╨╕ parentId ╨▓╨╛╨╖╨▓╤А╨░╤Й╨░╤О╤В╤Б╤П
-        ╨┐╨╛╤В╨╛╨╝╨║╨╕ ╨▒╨╡╨╖ ╤Б╨░╨╝╨╛╨│╨╛ ╤А╨╛╨┤╨╕╤В╨╡╨╗╤П. ╨Т ╨┐╨╗╨╛╤Б╨║╨╛╨╝ ╤Б╨┐╨╕╤Б╨║╨╡ children ╨┐╤Г╤Б╤В╨╛╨╣. ╨Э╨╡╨╕╨╖╨▓╨╡╤Б╤В╨╜╤Л╨╡ ╨╕ ╨┐╨╛╨▓╤В╨╛╤А╨╜╤Л╨╡ ╨┐╨░╤А╨░╨╝╨╡╤В╤А╤Л ╨▓╨╛╨╖╨▓╤А╨░╤Й╨░╤О╤В
+      summary: Получить категории витрины
+      description: 'Категория и все её предки должны быть активны. Порядок: sortOrder, name, id. При parentId возвращаются
+        потомки без самого родителя. В плоском списке children пустой. Неизвестные и повторные параметры возвращают
         400'
       operationId: listCatalogCategories
       parameters:
       - name: tree
         in: query
-        description: true тАФ ╨┤╨╡╤А╨╡╨▓╨╛, false тАФ ╨┐╨╗╨╛╤Б╨║╨╕╨╣ ╤Б╨┐╨╕╤Б╨╛╨║. ╨Я╤А╨╕╨╜╨╕╨╝╨░╤О╤В╤Б╤П ╤В╨╛╨╗╤М╨║╨╛ true ╨╕ false ╨▓ ╨╜╨╕╨╢╨╜╨╡╨╝ ╤А╨╡╨│╨╕╤Б╤В╤А╨╡
+        description: true — дерево, false — плоский список. Принимаются только true и false в нижнем регистре
         schema:
           type: boolean
           default: true
       - name: parentId
         in: query
-        description: UUID ╤А╨╛╨┤╨╕╤В╨╡╨╗╤П ╨┐╨╛╨┤╨┤╨╡╤А╨╡╨▓╨░. ╨Э╨╡╨╕╨╖╨▓╨╡╤Б╤В╨╜╤Л╨╣ ╨╕╨╗╨╕ ╨╜╨╡╨░╨║╤В╨╕╨▓╨╜╤Л╨╣ ╤А╨╛╨┤╨╕╤В╨╡╨╗╤М ╨▓╨╛╨╖╨▓╤А╨░╤Й╨░╨╡╤В 404
+        description: UUID родителя поддерева. Неизвестный или неактивный родитель возвращает 404
         schema:
           type: string
           format: uuid
       responses:
         '200':
-          description: ╨б╨┐╨╕╤Б╨╛╨║ ╨║╨╛╤А╨╜╨╡╨╣ ╨┤╨╡╤А╨╡╨▓╨░ ╨╕╨╗╨╕ ╨┐╨╗╨╛╤Б╨║╨╕╨╣ ╤Б╨┐╨╕╤Б╨╛╨║ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╣
+          description: Список корней дерева или плоский список категорий
           content:
             application/json:
               schema:
@@ -206,19 +206,19 @@ paths:
                 items:
                   $ref: '#/components/schemas/CategoryResponse'
         '400':
-          description: ╨Э╨╡╨║╨╛╤А╤А╨╡╨║╤В╨╜╤Л╨╡ ╨┐╨░╤А╨░╨╝╨╡╤В╤А╤Л ╨╖╨░╨┐╤А╨╛╤Б╨░ ╨╕╨╗╨╕ UUID
+          description: Некорректные параметры запроса или UUID
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemResponse'
         '404':
-          description: ╨а╨╡╤Б╤Г╤А╤Б ╨╛╤В╤Б╤Г╤В╤Б╤В╨▓╤Г╨╡╤В ╨╕╨╗╨╕ ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╡╨╜ ╨┤╨╗╤П ╨┐╤Г╨▒╨╗╨╕╤З╨╜╨╛╨╣ ╨▓╨╕╤В╤А╨╕╨╜╤Л
+          description: Ресурс отсутствует или недоступен для публичной витрины
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemResponse'
         '503':
-          description: PostgreSQL ╨▓╤А╨╡╨╝╨╡╨╜╨╜╨╛ ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╡╨╜
+          description: PostgreSQL временно недоступен
           content:
             application/problem+json:
               schema:
@@ -227,48 +227,48 @@ components:
   schemas:
     ProductImageResponse:
       type: object
-      description: ╨б╤Б╤Л╨╗╨║╨░ ╨╜╨░ ╨╕╨╖╨╛╨▒╤А╨░╨╢╨╡╨╜╨╕╨╡ ╤В╨╛╨▓╨░╤А╨░
+      description: Ссылка на изображение товара
       properties:
         mediaId:
           type: string
           format: uuid
-          description: ╨Ш╨┤╨╡╨╜╤В╨╕╤Д╨╕╨║╨░╤В╨╛╤А ╤Д╨░╨╣╨╗╨░ ╨▓ Media, URL ╨┐╨╛╨╗╤Г╤З╨░╨╡╤В╤Б╤П ╤З╨╡╤А╨╡╨╖ API Media
+          description: Идентификатор файла в Media, URL получается через API Media
           example: 00000000-0000-0000-0000-000000000201
         sortOrder:
           type: integer
           format: int32
-          description: ╨Я╨╛╤А╤П╨┤╨╛╨║ ╨╕╨╖╨╛╨▒╤А╨░╨╢╨╡╨╜╨╕╤П, ╨╝╨╡╨╜╤М╤И╨╡╨╡ ╤З╨╕╤Б╨╗╨╛ ╨╛╨╖╨╜╨░╤З╨░╨╡╤В ╨▒╨╛╨╗╨╡╨╡ ╤А╨░╨╜╨╜╨╕╨╣ ╨┐╨╛╨║╨░╨╖
+          description: Порядок изображения, меньшее число означает более ранний показ
           example: 0
       required:
       - mediaId
       - sortOrder
     ProductPageResponse:
       type: object
-      description: ╨б╤В╤А╨░╨╜╨╕╤Ж╨░ ╨╜╨░╨╣╨┤╨╡╨╜╨╜╤Л╤Е ╤В╨╛╨▓╨░╤А╨╛╨▓
+      description: Страница найденных товаров
       properties:
         items:
           type: array
-          description: ╨Ъ╨░╤А╤В╨╛╤З╨║╨╕ ╤В╨╡╨║╤Г╤Й╨╡╨╣ ╤Б╤В╤А╨░╨╜╨╕╤Ж╤Л, ╨┐╤Г╤Б╤В╨╛╨╣ ╨╝╨░╤Б╤Б╨╕╨▓ ╨╡╤Б╨╗╨╕ ╤Б╨╛╨▓╨┐╨░╨┤╨╡╨╜╨╕╨╣ ╨╜╨╡╤В
+          description: Карточки текущей страницы, пустой массив если совпадений нет
           items:
             $ref: '#/components/schemas/ProductResponse'
         page:
           type: integer
           format: int32
-          description: ╨Э╨╛╨╝╨╡╤А ╤Б╤В╤А╨░╨╜╨╕╤Ж╤Л ╤Б ╨╜╤Г╨╗╤П
+          description: Номер страницы с нуля
           example: 0
           minimum: 0
         size:
           type: integer
           format: int32
-          description: ╨Ч╨░╨┐╤А╨╛╤И╨╡╨╜╨╜╤Л╨╣ ╤А╨░╨╖╨╝╨╡╤А ╤Б╤В╤А╨░╨╜╨╕╤Ж╤Л, ╨╝╨╛╨╢╨╡╤В ╨┐╤А╨╡╨▓╤Л╤И╨░╤В╤М ╤Д╨░╨║╤В╨╕╤З╨╡╤Б╨║╨╛╨╡ ╤З╨╕╤Б╨╗╨╛ ╨║╨░╤А╤В╨╛╤З╨╡╨║
+          description: Запрошенный размер страницы, может превышать фактическое число карточек
           example: 20
           maximum: 100
           minimum: 1
         total:
           type: integer
           format: int32
-          description: ╨з╨╕╤Б╨╗╨╛ ╤Б╨╛╨▓╨┐╨░╨┤╨╡╨╜╨╕╨╣ ╨▓ Elasticsearch ╨┤╨╛ ╨▓╤Л╨┤╨╡╨╗╨╡╨╜╨╕╤П ╤Б╤В╤А╨░╨╜╨╕╤Ж╤Л, ╨┐╤А╨╕ ╤Г╤Б╤В╨░╤А╨╡╨▓╤И╨╡╨╝ ╨╕╨╜╨┤╨╡╨║╤Б╨╡ ╨╝╨╛╨╢╨╡╤В ╨▓╨║╨╗╤О╤З╨░╤В╤М
-            ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╜╤Л╨╡ ╤В╨╛╨▓╨░╤А╤Л
+          description: Число совпадений в Elasticsearch до выделения страницы, при устаревшем индексе может включать
+            недоступные товары
           example: 42
           minimum: 0
       required:
@@ -278,73 +278,73 @@ components:
       - total
     ProductResponse:
       type: object
-      description: ╨Ъ╨░╤А╤В╨╛╤З╨║╨░ ╨┤╨╛╤Б╤В╤Г╨┐╨╜╨╛╨│╨╛ ╤В╨╛╨▓╨░╤А╨░
+      description: Карточка доступного товара
       properties:
         id:
           type: string
           format: uuid
-          description: ╨Ш╨┤╨╡╨╜╤В╨╕╤Д╨╕╨║╨░╤В╨╛╤А ╤В╨╛╨▓╨░╤А╨░
+          description: Идентификатор товара
           example: 00000000-0000-0000-0000-000000000101
         title:
           type: string
-          description: ╨Э╨░╨╖╨▓╨░╨╜╨╕╨╡ ╤В╨╛╨▓╨░╤А╨░
-          example: ╨Э╨╛╨▓╨░╤П ╨║╨╜╨╕╨│╨░
+          description: Название товара
+          example: Новая книга
         description:
           type:
           - string
           - 'null'
-          description: ╨Ю╨┐╨╕╤Б╨░╨╜╨╕╨╡ ╤В╨╛╨▓╨░╤А╨░ ╨╕╨╗╨╕ null
-          example: ╨Ъ╨╜╨╕╨│╨░ ╨╛ ╨╢╨╕╨▓╨╛╤В╨╜╤Л╤Е
+          description: Описание товара или null
+          example: Книга о животных
         price:
           type: integer
           format: int64
-          description: ╨ж╨╡╨╜╨░ ╨▓ ╤Ж╨╡╨╗╤Л╤Е ╨▒╨╛╨╜╤Г╤Б╨░╤Е
+          description: Цена в целых бонусах
           example: 1500
           minimum: 1
         categoryId:
           type: string
           format: uuid
-          description: ╨Ш╨┤╨╡╨╜╤В╨╕╤Д╨╕╨║╨░╤В╨╛╤А ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕
+          description: Идентификатор категории
           example: 00000000-0000-0000-0000-000000000001
         categoryName:
           type: string
-          description: ╨Э╨░╨╖╨▓╨░╨╜╨╕╨╡ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕
-          example: ╨Ъ╨╜╨╕╨│╨╕
+          description: Название категории
+          example: Книги
         categorySlug:
           type: string
-          description: Slug ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕
+          description: Slug категории
           example: books
         images:
           type: array
-          description: ╨Ш╨╖╨╛╨▒╤А╨░╨╢╨╡╨╜╨╕╤П ╨▓ ╨┐╨╛╤А╤П╨┤╨║╨╡ ╨┐╨╛╨║╨░╨╖╨░, ╨┐╤Г╤Б╤В╨╛╨╣ ╨╝╨░╤Б╤Б╨╕╨▓ ╨╡╤Б╨╗╨╕ ╨╕╨╖╨╛╨▒╤А╨░╨╢╨╡╨╜╨╕╨╣ ╨╜╨╡╤В
+          description: Изображения в порядке показа, пустой массив если изображений нет
           items:
             $ref: '#/components/schemas/ProductImageResponse'
         sellerId:
           type: string
           format: uuid
-          description: ╨Ш╨┤╨╡╨╜╤В╨╕╤Д╨╕╨║╨░╤В╨╛╤А ╨░╨║╨║╨░╤Г╨╜╤В╨░ ╨┐╤А╨╛╨┤╨░╨▓╤Ж╨░, ╤Б╨╛╨▓╨┐╨░╨┤╨░╨╡╤В ╤Б sub ╨╡╨│╨╛ JWT
+          description: Идентификатор аккаунта продавца, совпадает с sub его JWT
           example: 00000000-0000-0000-0000-000000000010
         companyName:
           type:
           - string
           - 'null'
-          description: ╨Э╨░╨╖╨▓╨░╨╜╨╕╨╡ ╨╝╨░╨│╨░╨╖╨╕╨╜╨░ ╨╕╨╗╨╕ null, ╨╡╤Б╨╗╨╕ Auth ╨╜╨╡ ╨╜╨░╤И╤С╨╗ ╨┐╤А╨╛╨┤╨░╨▓╤Ж╨░
-          example: ╨Ъ╨╜╨╕╨╢╨╜╤Л╨╣ ╨╝╨░╨│╨░╨╖╨╕╨╜
+          description: Название магазина или null, если Auth не нашёл продавца
+          example: Книжный магазин
         sellerDescription:
           type:
           - string
           - 'null'
-          description: ╨Ю╨┐╨╕╤Б╨░╨╜╨╕╨╡ ╨╝╨░╨│╨░╨╖╨╕╨╜╨░ ╨╕╨╗╨╕ null
-          example: ╨Ь╨░╨│╨░╨╖╨╕╨╜ ╨║╨╜╨╕╨│
+          description: Описание магазина или null
+          example: Магазин книг
         createdAt:
           type: string
           format: date-time
-          description: ╨Т╤А╨╡╨╝╤П ╤Б╨╛╨╖╨┤╨░╨╜╨╕╤П ╨▓ ╤Д╨╛╤А╨╝╨░╤В╨╡ ISO 8601
+          description: Время создания в формате ISO 8601
           example: '2026-11-27T00:00:00Z'
         updatedAt:
           type: string
           format: date-time
-          description: ╨Т╤А╨╡╨╝╤П ╨┐╨╛╤Б╨╗╨╡╨┤╨╜╨╡╨│╨╛ ╨╕╨╖╨╝╨╡╨╜╨╡╨╜╨╕╤П ╨▓ ╤Д╨╛╤А╨╝╨░╤В╨╡ ISO 8601
+          description: Время последнего изменения в формате ISO 8601
           example: '2026-11-27T01:00:00Z'
       required:
       - categoryId
@@ -362,33 +362,33 @@ components:
       - updatedAt
     ProblemResponse:
       type: object
-      description: ╨Ю╤И╨╕╨▒╨║╨░ ╨▓ ╤Д╨╛╤А╨╝╨░╤В╨╡ Problem Details
+      description: Ошибка в формате Problem Details
       properties:
         type:
           type: string
-          description: ╨Ш╨┤╨╡╨╜╤В╨╕╤Д╨╕╨║╨░╤В╨╛╤А ╤В╨╕╨┐╨░ ╨╛╤И╨╕╨▒╨║╨╕
+          description: Идентификатор типа ошибки
           example: about:blank
         title:
           type: string
-          description: ╨Ъ╤А╨░╤В╨║╨╛╨╡ ╨╜╨░╨╖╨▓╨░╨╜╨╕╨╡ HTTP ╨╛╤И╨╕╨▒╨║╨╕
+          description: Краткое название HTTP ошибки
           example: Bad Request
         status:
           type: integer
           format: int32
-          description: HTTP ╨║╨╛╨┤ ╨╛╤И╨╕╨▒╨║╨╕
+          description: HTTP код ошибки
           example: 400
         detail:
           type: string
-          description: ╨Ю╨┐╨╕╤Б╨░╨╜╨╕╨╡ ╨┐╤А╨╕╤З╨╕╨╜╤Л ╨╛╤И╨╕╨▒╨║╨╕
+          description: Описание причины ошибки
           example: Price minimum is greater than maximum
         instance:
           type: string
-          description: ╨Я╤Г╤В╤М ╨╖╨░╨┐╤А╨╛╤Б╨░ ╨▒╨╡╨╖ query string
+          description: Путь запроса без query string
           example: /api/v1/catalog/products
         timestamp:
           type: string
           format: date-time
-          description: ╨Т╤А╨╡╨╝╤П ╤Д╨╛╤А╨╝╨╕╤А╨╛╨▓╨░╨╜╨╕╤П ╨╛╤И╨╕╨▒╨║╨╕ ╨▓ ╤Д╨╛╤А╨╝╨░╤В╨╡ ISO 8601
+          description: Время формирования ошибки в формате ISO 8601
           example: '2026-11-27T00:00:00Z'
       required:
       - detail
@@ -399,36 +399,36 @@ components:
       - type
     CategoryResponse:
       type: object
-      description: ╨г╨╖╨╡╨╗ ╨┤╨╡╤А╨╡╨▓╨░ ╨╕╨╗╨╕ ╨┐╨╗╨╛╤Б╨║╨╛╨│╨╛ ╤Б╨┐╨╕╤Б╨║╨░ ╨┐╤Г╨▒╨╗╨╕╤З╨╜╤Л╤Е ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╣
+      description: Узел дерева или плоского списка публичных категорий
       properties:
         id:
           type: string
           format: uuid
-          description: ╨Ш╨┤╨╡╨╜╤В╨╕╤Д╨╕╨║╨░╤В╨╛╤А ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕
+          description: Идентификатор категории
           example: 00000000-0000-0000-0000-000000000001
         parentId:
           type:
           - string
           - 'null'
           format: uuid
-          description: ╨Ш╨┤╨╡╨╜╤В╨╕╤Д╨╕╨║╨░╤В╨╛╤А ╤А╨╛╨┤╨╕╤В╨╡╨╗╤П ╨╕╨╗╨╕ null ╨┤╨╗╤П ╨║╨╛╤А╨╜╨╡╨▓╨╛╨╣ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕
+          description: Идентификатор родителя или null для корневой категории
           example: 00000000-0000-0000-0000-000000000002
         name:
           type: string
-          description: ╨Э╨░╨╖╨▓╨░╨╜╨╕╨╡ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕
-          example: ╨Ъ╨╜╨╕╨│╨╕
+          description: Название категории
+          example: Книги
         slug:
           type: string
-          description: Slug ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕ ╨┤╨╗╤П ╤Д╨╕╨╗╤М╤В╤А╨░╤Ж╨╕╨╕ ╤В╨╛╨▓╨░╤А╨╛╨▓
+          description: Slug категории для фильтрации товаров
           example: books
         sortOrder:
           type: integer
           format: int32
-          description: ╨Я╨╛╤А╤П╨┤╨╛╨║ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕ ╤Б╤А╨╡╨┤╨╕ ╤Б╨╛╤Б╨╡╨┤╨╡╨╣
+          description: Порядок категории среди соседей
           example: 0
         children:
           type: array
-          description: ╨Т╨╕╨┤╨╕╨╝╤Л╨╡ ╨┤╨╛╤З╨╡╤А╨╜╨╕╨╡ ╨║╨░╤В╨╡╨│╨╛╤А╨╕╨╕, ╨┐╤Г╤Б╤В╨╛╨╣ ╨╝╨░╤Б╤Б╨╕╨▓ ╨┐╤А╨╕ tree=false ╨╕╨╗╨╕ ╨╛╤В╤Б╤Г╤В╤Б╤В╨▓╨╕╨╕ ╨┐╨╛╤В╨╛╨╝╨║╨╛╨▓
+          description: Видимые дочерние категории, пустой массив при tree=false или отсутствии потомков
           items:
             $ref: '#/components/schemas/CategoryResponse'
       required:
